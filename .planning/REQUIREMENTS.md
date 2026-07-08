@@ -7,7 +7,7 @@
 - [ ] **BCAST-01**: AI 面板工具栏显示广播模式 toggle 按钮，点击切换开/关状态
 - [ ] **BCAST-02**: 广播模式开启后，显示目标选择器，列出所有已打开的终端标签
 - [ ] **BCAST-03**: 用户可勾选/取消勾选任意终端标签作为广播目标
-- [ ] **BCAST-04**: 广播 toggle 和目标选择状态为 per-tab 级别，保存在 AI store 中
+- [x] **BCAST-04**: 广播 toggle 和目标选择状态为 per-tab 级别，保存在 AI store 中
 
 ### Broadcast Dispatch
 
@@ -41,11 +41,11 @@
 | BCAST-01 | Phase 1 | Pending |
 | BCAST-02 | Phase 1 | Pending |
 | BCAST-03 | Phase 1 | Pending |
-| BCAST-04 | Phase 1 | Pending |
+| BCAST-04 | Phase 1 | Complete (Plan 01-01) |
 | BCAST-05 | Phase 2 | Pending |
 | BCAST-06 | Phase 2 | Pending |
 | BCAST-07 | Phase 2 | Pending |
 | BCAST-08 | Phase 2 | Pending |
 
 ---
-*Last updated: 2026-07-08 after roadmap creation*
+*Last updated: 2026-07-08 after Plan 01-01 execution (BCAST-04 complete)*

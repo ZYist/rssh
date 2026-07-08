@@ -33,7 +33,7 @@ AI Broadcast Mode extends RSSH's AI panel so that approved commands fan out to m
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — 广播状态地基（ai/store.svelte.ts per-tab _broadcastByTab + getter/mutator + stopSession teardown）+ 抽取 BroadcastTargetSelector 共享组件 + 改造 EditPane 消费（回归安全）
+- [x] 01-01-PLAN.md — 广播状态地基（ai/store.svelte.ts per-tab _broadcastByTab + getter/mutator + stopSession teardown）+ 抽取 BroadcastTargetSelector 共享组件 + 改造 EditPane 消费（回归安全）
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -63,5 +63,5 @@ Phases execute in numeric order: 1 -> 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Broadcast UI & State | 0/2 | Not started | - |
+| 1. Broadcast UI & State | 1/2 | In progress | - |
 | 2. Broadcast Dispatch & Safety | 0/TBD | Not started | - |
