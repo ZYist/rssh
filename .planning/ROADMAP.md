@@ -25,7 +25,10 @@ AI Broadcast Mode extends RSSH's AI panel so that approved commands fan out to m
   2. When broadcast is enabled, a target selector appears listing all open terminal tabs
   3. User can check/uncheck individual terminal tabs as broadcast targets
   4. Broadcast toggle state and target selections persist when switching between tabs or closing/reopening the AI panel
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — 广播状态地基（ai/store.svelte.ts per-tab _broadcastByTab + getter/mutator + stopSession teardown）+ 抽取 BroadcastTargetSelector 共享组件 + 改造 EditPane 消费（回归安全）
+- [ ] 01-02-PLAN.md — ChatPanel 广播开关按钮 + 可折叠目标条 + prune $effect + en/zh i18n 双语 key（交付 Phase 1 全部 4 条用户可见 Success Criteria）
 **UI hint**: yes
 
 ### Phase 2: Broadcast Dispatch & Safety
@@ -47,5 +50,5 @@ Phases execute in numeric order: 1 -> 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Broadcast UI & State | 0/TBD | Not started | - |
+| 1. Broadcast UI & State | 0/2 | Not started | - |
 | 2. Broadcast Dispatch & Safety | 0/TBD | Not started | - |
