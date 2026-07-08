@@ -497,22 +497,25 @@ export function pruneBroadcastTargets(tabId: string, activeTabIds: Set<string>):
 
 **Note:** A2 是唯一真正的 `[ASSUMED]`（具体 SVG path 值）。其余 claim 经代码库 grep/read 确认为 `[VERIFIED: codebase]`。本阶段无 `[VERIFIED: npm registry]` / `[CITED: docs]` 标签——因为没有外部库/文档需要查，代码库自身即权威。
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **ChatPanel 目标条是否保留 hover 预览（SessionPreviewPopover）？**
    - What we know: EditPane 有 hover 预览；UI-SPEC 未明确要求/禁止 ChatPanel 目标条保留它。
    - What's unclear: AI 面板宽度（380px）比 EditPane 右栏（200px）宽，popover 锚点空间足够，但增加了组件复杂度。
    - Recommendation: planner 可作为 Claude's Discretion 项——首版可不带 hover 预览（减复杂度），后续按需加。不阻塞核心状态逻辑。
+   - → RESOLVED: ChatPanel 首版不带 hover；EditPane 既有 hover 通过 01-01 Task2 新增的 onHover/onHoverLeave 可选 prop 保留（见 W2 修订）。
 
 2. **lucide `radio` vs `radio-tower` 具体图标形？**
    - What we know: UI-SPEC D-07 倾向"发射塔/广播波"，从 lucide 取形。
    - What's unclear: `radio`（弧形波）与 `radio-tower`（塔形）哪个更贴。
    - Recommendation: 实现时从 lucide.dev 复制其一的 canonical path；两者都符合 stroke 风格统一要求。不阻塞规划。
+   - → RESOLVED: 选 lucide radio 形（01-02 Task1 step C 实现时从 lucide.dev 复制 canonical path）。
 
 3. **store mutator 是否需要单测？**
    - What we know: 项目有 `src/**/*.test.ts` 单测约定；`nyquist_validation: false`（config.json）表示不强制 Validation Architecture 节。
    - What's unclear: planner 是否为 `_broadcastByTab` mutator 写纯逻辑单测（Set 重建、prune 剔除）。
    - Recommendation: mutator 是纯函数逻辑（尤其 prune 的差集计算），配单测成本低、收益高；planner 可选加 `store.broadcast.test.ts`。非阻塞。
+   - → RESOLVED: 不加单测（workflow.nyquist_validation=false；prune 差集为纯逻辑，非阻塞，后续可选补 store.broadcast.test.ts）。
 
 ## Environment Availability
 
