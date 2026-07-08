@@ -36,16 +36,16 @@
 
 ## Traceability
 
-| REQ-ID | Phase |
-|--------|-------|
-| BCAST-01 | — |
-| BCAST-02 | — |
-| BCAST-03 | — |
-| BCAST-04 | — |
-| BCAST-05 | — |
-| BCAST-06 | — |
-| BCAST-07 | — |
-| BCAST-08 | — |
+| REQ-ID | Phase | Status |
+|--------|-------|--------|
+| BCAST-01 | Phase 1 | Pending |
+| BCAST-02 | Phase 1 | Pending |
+| BCAST-03 | Phase 1 | Pending |
+| BCAST-04 | Phase 1 | Pending |
+| BCAST-05 | Phase 2 | Pending |
+| BCAST-06 | Phase 2 | Pending |
+| BCAST-07 | Phase 2 | Pending |
+| BCAST-08 | Phase 2 | Pending |
 
 ---
-*Last updated: 2026-07-08 after requirements definition*
+*Last updated: 2026-07-08 after roadmap creation*
