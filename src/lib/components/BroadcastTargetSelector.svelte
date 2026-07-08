@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { SessionInfo } from "../stores/app.svelte.ts";
-  import SessionMinimap from "./SessionMinimap.svelte";
   import { t } from "../i18n/index.svelte.ts";
   import AppIcon from "./AppIcon.svelte";
   import { tabIconName } from "./app-icon";
@@ -46,7 +45,6 @@
         onmouseleave={onHoverLeave ?? undefined}
         title={s.label}
       >
-        <SessionMinimap tabId={s.tabId} />
         <span class="session-meta">
           <span class="session-type"><AppIcon name={tabIconName(s.type)} size={13} /></span>
           <span class="session-label">{s.label}</span>
@@ -77,9 +75,9 @@
 
   .session-item {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 6px;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
     border: 1px solid transparent;
     border-radius: var(--radius-sm);
     cursor: pointer;
