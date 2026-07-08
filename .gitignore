@@ -24,7 +24,8 @@
 *.swp
 *.swo
 
-.claude/
+.claude/*
+!.claude/CLAUDE.md
 .codex/
 idea-plugin/build/
 idea-plugin/.gradle/
