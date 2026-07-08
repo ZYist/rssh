@@ -1,0 +1,85 @@
+{
+  "_meta": {
+    "updated_at": "2026-07-08T03:05:40.110Z",
+    "version": 2
+  },
+  "entries": {
+    "overview": {
+      "pattern": "Tauri 2 desktop/mobile app with Rust core engine + Svelte 5 frontend",
+      "description": "RSSH is a multi-protocol terminal client (SSH, local PTY, serial, telnet) with SFTP file transfer, port forwarding, config sync, and an AI-assisted troubleshooting module. The Rust core (src-tauri) holds ALL business logic and persistence; the Svelte frontend (src) is a thin UI that talks to it exclusively over Tauri IPC commands. The same engine is reused by a headless WebSocket server binary and a standalone CLI."
+    },
+    "data-flow": {
+      "flow": "xterm.js frontend -> Tauri invoke() command -> #[tauri::command] handler -> engine module (ssh/terminal/ai) -> SQLite + secret store -> events emitted back to frontend via emitter::Host",
+      "description": "Frontend calls invoke('cmd', args); the command in src-tauri/src/commands/ mutates state and returns serde-serializable data. Long-running streams (terminal bytes, AI tokens) are pushed to the frontend as Tauri events (listen on 'ai:*:<tab_id>', terminal output events). The error path carries i18n: AppError formats as __rssh_err__|{code,params} which the frontend errMsg() maps to translation keys."
+    },
+    "dual-adapter-invariants": {
+      "pattern": "One engine, two transports (Tauri IPC + WebSocket)",
+      "description": "INV-1..INV-4 invariants: the web frontend runs unchanged inside Tauri AND outside it (browser / IntelliJ JCEF). A single IPC shim (src/lib/ipc-shim.ts) emulates window.__TAURI_INTERNALS__ over a WebSocket when the real global is absent. The headless server (src-tauri/src/server.rs, server feature) dispatches the SAME crate::db/engine functions the Tauri commands call, sharing the ~/.rssh data dir so state stays identical across GUI, server, and CLI."
+    },
+    "conventions": {
+      "naming": "Rust: snake_case fns, modules per domain (commands, ssh, terminal, db, secret, ai, sync). Frontend: camelCase TS fns, kebab-case .svelte components; Svelte 5 runes ($state/$derived) in .svelte.ts module stores.",
+      "file-organization": "Backend src-tauri/src/{commands,db,ssh,terminal,ai,secret,sync,migration}. Frontend src/lib/{components,stores,ai,terminal,themes,i18n,keyboard,osc}. Co-located *.test.ts next to source. Desktop-only modules gated with #[cfg(not(target_os=\"android\"))].",
+      "imports": "Frontend uses bare @tauri-apps/api/core invoke + event listen; one seam (ipc-shim) lets the whole app run off-Tauri. Backend uses crate-local paths; db module keeps rusqlite::Connection private behind domain methods."
+    },
+    "security": {
+      "pattern": "Layered secret storage: OS keyring primary, encrypted-DB hybrid fallback, i18n error channel, AI redaction",
+      "description": "secret::open() picks a platform-native keyring (apple/windows/secret-service) and falls back to a HybridStore that encrypts secrets with ChaCha20-Poly1305 under an Argon2id-derived master key (master.key or keychain). No bare-string errors: every AppError carries a CodedMsg i18n key. The AI module redacts terminal output (regex rules in DB) before sending to the LLM, blacklists dangerous commands, and audits every session. Passphrases are cached in-process with Zeroizing<String>."
+    },
+    "transports": {
+      "pattern": "Four byte-stream terminal transports behind a uniform output/sink handle model",
+      "description": "ssh::client::SessionHandle, terminal::pty::PtyHandle, terminal::serial::SerialHandle, terminal::telnet::TelnetHandle each expose an Out/Sink pair. All are stored in Mutex<HashMap<String, Handle>> on AppState, indexed by tab_id. Telnet is plain TCP (all platforms); PTY + serial are desktop-only. The frontend TerminalPane is the single render target for all four."
+    },
+    "component:core-engine": {
+      "path": "src-tauri/src/lib.rs",
+      "responsibility": "Tauri Builder setup: registers plugins, runs DB open + secret store + migrations, builds AppState, wires the ~150-command invoke_handler. Entry point for the GUI binary (main.rs)."
+    },
+    "component:app-state": {
+      "path": "src-tauri/src/state.rs",
+      "responsibility": "AppState: the shared mutable world (Arc<Db>, secret_store, session maps for ssh/pty/serial/telnet/sftp/forwards, auth/passphrase/host-key waiters, AI sessions, window groups). All commands take State<AppState>."
+    },
+    "component:db-layer": {
+      "path": "src-tauri/src/db/",
+      "responsibility": "SQLite (rusqlite, WAL, busy_timeout 5s) at ~/.rssh/rssh.db. One sub-module per domain table (profile, credential, forward, group, settings, highlight, snippet, secret, serial_profile, telnet_profile, ai_*). schema.rs owns migrations. with_transaction / with_exclusive_lock wrap multi-step writes."
+    },
+    "component:ssh-stack": {
+      "path": "src-tauri/src/ssh/",
+      "responsibility": "russh 0.60 based SSH client: auth (password/key/interactive/agent), bastion/jump hosts, known_hosts TOFU, config parsing (ssh_config + Include globs), port forwarding (local/remote/dynamic), SFTP."
+    },
+    "component:terminal-stack": {
+      "path": "src-tauri/src/terminal/",
+      "responsibility": "Three desktop transports (pty via portable-pty, serial via serialport, telnet via tokio TCP) plus recorder (asciicast session recording)."
+    },
+    "component:ai-module": {
+      "path": "src-tauri/src/ai/",
+      "responsibility": "BYOK LLM troubleshooting: llm/ (anthropic, openai, deepseek, glm providers over reqwest), tools (run_command/load_skill/download_file/patch_file), sanitize + redact_rules (regex masking), command_blacklist, audit, session lifecycle. Session bound to a terminal tab."
+    },
+    "component:secret-module": {
+      "path": "src-tauri/src/secret/",
+      "responsibility": "HybridStore (keyring + encrypted DB) keyed by 'setting:' namespaced keys. master_key derivation, crypto primitives (Argon2id KDF + ChaCha20-Poly1305 AEAD)."
+    },
+    "component:sync-module": {
+      "path": "src-tauri/src/sync/",
+      "responsibility": "Encrypted config backup/sync: GitHub gist + WebDAV backends, shared config.rs (de)serialization. Uses the same crypto envelope as secret storage."
+    },
+    "component:frontend-entry": {
+      "path": "src/main.ts",
+      "responsibility": "Mounts Svelte 5 App, installs IPC shim first, initializes theme/transfers/app stores before first paint, loads terminal interaction prefs."
+    },
+    "component:frontend-stores": {
+      "path": "src/lib/stores/app.svelte.ts",
+      "responsibility": "Central UI store (Svelte 5 runes): tabs, active tab, settings page navigation, profile/forward/group loads. The tab model unifies ssh/local/serial/telnet/forward/edit types."
+    },
+    "component:frontend-ipc-shim": {
+      "path": "src/lib/ipc-shim.ts",
+      "responsibility": "Emulates window.__TAURI_INTERNALS__ over WebSocket when off-Tauri (browser/IDEA). Routes invoke/listen, handles browser-local commands (clipboard, open url, file pickers), clone-handoff for multi-window."
+    },
+    "component:headless-server": {
+      "path": "src-tauri/src/server.rs",
+      "responsibility": "Optional 'server' feature binary (rssh-server): embeds ../dist frontend, serves JSON-over-WebSocket dispatch to the same engine, token-gated handshake. Powers the IntelliJ plugin."
+    },
+    "component:cli": {
+      "path": "src-tauri/src/bin/rssh/",
+      "responsibility": "Optional 'cli' feature binary (rssh-cli, clap): add/ls/edit/rm/open/config/completions subcommands. Reads/writes the same ~/.rssh DB directly; OSC 7337 protocol lets it hand off to the running GUI ('rssh open <name>')."
+    }
+  }
+}

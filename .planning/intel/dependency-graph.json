@@ -1,0 +1,374 @@
+{
+  "_meta": {
+    "updated_at": "2026-07-08T03:04:18.634Z",
+    "version": 2
+  },
+  "entries": {
+    "tauri": {
+      "version": "2",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/lib.rs",
+        "src-tauri/src/main.rs",
+        "src-tauri/src/commands/"
+      ],
+      "invocation": "implicit"
+    },
+    "russh": {
+      "version": "0.60.1",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/ssh/client.rs",
+        "src-tauri/src/ssh/auth.rs",
+        "src-tauri/src/ssh/forward.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "russh-sftp": {
+      "version": "2",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/ssh/sftp.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "tokio": {
+      "version": "1",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/ssh/",
+        "src-tauri/src/terminal/",
+        "src-tauri/src/server.rs",
+        "src-tauri/src/ai/session.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "rusqlite": {
+      "version": "0.31",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/db/"
+      ],
+      "invocation": "implicit"
+    },
+    "serde": {
+      "version": "1",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/models.rs",
+        "src-tauri/src/error.rs",
+        "src-tauri/src/db/"
+      ],
+      "invocation": "implicit"
+    },
+    "serde_json": {
+      "version": "1",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/error.rs",
+        "src-tauri/src/server.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "portable-pty": {
+      "version": "0.8",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/terminal/pty.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "serialport": {
+      "version": "4.9.0",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/terminal/serial.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "arboard": {
+      "version": "3",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/commands/window.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "keyring": {
+      "version": "3",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/secret/keyring_store.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "chacha20poly1305": {
+      "version": "0.10",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/secret/crypto.rs",
+        "src-tauri/src/secret/hybrid_store.rs",
+        "src-tauri/src/crypto.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "argon2": {
+      "version": "0.5",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/secret/crypto.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "reqwest": {
+      "version": "0.12",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/ai/llm/",
+        "src-tauri/src/sync/github.rs",
+        "src-tauri/src/commands/update.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "clap": {
+      "version": "4",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/bin/rssh/main.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "tokio-tungstenite": {
+      "version": "0.24",
+      "type": "optional",
+      "used_by": [
+        "src-tauri/src/server.rs"
+      ],
+      "invocation": "cargo build --features server"
+    },
+    "include_dir": {
+      "version": "0.7",
+      "type": "optional",
+      "used_by": [
+        "src-tauri/src/server.rs"
+      ],
+      "invocation": "cargo build --features server"
+    },
+    "tree-sitter": {
+      "version": "0.26.9",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/ai/"
+      ],
+      "invocation": "implicit"
+    },
+    "fontdb": {
+      "version": "0.23.0",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/commands/settings.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "thiserror": {
+      "version": "2",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/error.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "uuid": {
+      "version": "1",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/db/"
+      ],
+      "invocation": "implicit"
+    },
+    "chrono": {
+      "version": "0.4",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/db/"
+      ],
+      "invocation": "implicit"
+    },
+    "regex": {
+      "version": "1",
+      "type": "production",
+      "used_by": [
+        "src-tauri/src/ai/redact_rules.rs",
+        "src-tauri/src/db/highlight.rs"
+      ],
+      "invocation": "implicit"
+    },
+    "mockito": {
+      "version": "1.7.2",
+      "type": "development",
+      "used_by": [
+        "src-tauri/ (#[cfg(test)])"
+      ],
+      "invocation": "cargo test"
+    },
+    "tempfile": {
+      "version": "3",
+      "type": "development",
+      "used_by": [
+        "src-tauri/ (#[cfg(test)], cli feature)"
+      ],
+      "invocation": "cargo test"
+    },
+    "@tauri-apps/api": {
+      "version": "^2",
+      "type": "production",
+      "used_by": [
+        "src/lib/stores/app.svelte.ts",
+        "src/lib/ai/store.svelte.ts",
+        "src/lib/ipc-shim.ts",
+        "src/lib/stores/"
+      ],
+      "invocation": "implicit"
+    },
+    "@tauri-apps/plugin-dialog": {
+      "version": "^2",
+      "type": "production",
+      "used_by": [
+        "src/lib/pick-file.ts",
+        "src/lib/save-file.ts"
+      ],
+      "invocation": "implicit"
+    },
+    "@tauri-apps/plugin-fs": {
+      "version": "^2",
+      "type": "production",
+      "used_by": [
+        "src/lib/save-file.ts"
+      ],
+      "invocation": "implicit"
+    },
+    "@xterm/xterm": {
+      "version": "6.0.0",
+      "type": "production",
+      "used_by": [
+        "src/lib/components/ (terminal panes)"
+      ],
+      "invocation": "implicit"
+    },
+    "@xterm/addon-fit": {
+      "version": "^0.11.0",
+      "type": "production",
+      "used_by": [
+        "src/lib/components/ (TerminalPane)"
+      ],
+      "invocation": "implicit"
+    },
+    "@xterm/addon-search": {
+      "version": "^0.16.0",
+      "type": "production",
+      "used_by": [
+        "src/lib/components/ (TerminalPane)"
+      ],
+      "invocation": "implicit"
+    },
+    "@xterm/addon-web-links": {
+      "version": "^0.12.0",
+      "type": "production",
+      "used_by": [
+        "src/lib/components/ (TerminalPane)"
+      ],
+      "invocation": "implicit"
+    },
+    "@xterm/addon-image": {
+      "version": "^0.9.0",
+      "type": "production",
+      "used_by": [
+        "src/lib/terminal/block-to-image.ts"
+      ],
+      "invocation": "implicit"
+    },
+    "codemirror": {
+      "version": "^6.0.2",
+      "type": "production",
+      "used_by": [
+        "src/lib/components/ (CredentialEditor, ProfileEditor snippet editor)"
+      ],
+      "invocation": "implicit"
+    },
+    "@codemirror/theme-one-dark": {
+      "version": "^6.1.3",
+      "type": "production",
+      "used_by": [
+        "src/lib/components/ (code editors)"
+      ],
+      "invocation": "implicit"
+    },
+    "marked": {
+      "version": "^18.0.2",
+      "type": "production",
+      "used_by": [
+        "src/lib/ai/markdown.ts"
+      ],
+      "invocation": "implicit"
+    },
+    "dompurify": {
+      "version": "^3.4.1",
+      "type": "production",
+      "used_by": [
+        "src/lib/ai/markdown.ts"
+      ],
+      "invocation": "implicit"
+    },
+    "svelte": {
+      "version": "^5",
+      "type": "development",
+      "used_by": [
+        "src/**/*.svelte",
+        "src/lib/**/*.svelte.ts"
+      ],
+      "invocation": "npm run build"
+    },
+    "vite": {
+      "version": "^6",
+      "type": "development",
+      "used_by": [
+        "vite.config.ts"
+      ],
+      "invocation": "npm run build"
+    },
+    "@sveltejs/vite-plugin-svelte": {
+      "version": "^5",
+      "type": "development",
+      "used_by": [
+        "vite.config.ts",
+        "vitest.config.ts"
+      ],
+      "invocation": "npm run build"
+    },
+    "vitest": {
+      "version": "^4.1.5",
+      "type": "development",
+      "used_by": [
+        "vitest.config.ts",
+        "src/**/*.test.ts"
+      ],
+      "invocation": "npm test"
+    },
+    "@tauri-apps/cli": {
+      "version": "^2",
+      "type": "development",
+      "used_by": [
+        "package.json (tauri script)"
+      ],
+      "invocation": "npm run tauri"
+    },
+    "typescript": {
+      "version": "^5.6",
+      "type": "development",
+      "used_by": [
+        "tsconfig.json"
+      ],
+      "invocation": "implicit"
+    }
+  }
+}

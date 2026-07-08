@@ -1,0 +1,38 @@
+{
+  "_meta": {
+    "updated_at": "2026-07-08T02:58:36.574Z",
+    "version": 2
+  },
+  "languages": [
+    "Rust",
+    "TypeScript",
+    "Svelte",
+    "JavaScript",
+    "CSS"
+  ],
+  "frameworks": [
+    "Tauri 2",
+    "Svelte 5",
+    "Tokio"
+  ],
+  "tools": [
+    "Vite 6",
+    "Vitest",
+    "Cargo",
+    "npm",
+    "env_logger",
+    "clap",
+    "tree-sitter",
+    "fontdb"
+  ],
+  "build_system": "npm scripts (vite build) + cargo build; tauri build orchestrates both (tauri.conf.json beforeBuildCommand)",
+  "test_framework": "Vitest (frontend, src/**/*.test.ts) + cargo test with mockito (backend, #[cfg(test)])",
+  "package_manager": "npm (frontend) + Cargo (backend)",
+  "content_formats": [
+    "Rust (src-tauri backend)",
+    "TypeScript/Svelte 5 runes (frontend)",
+    "JSON (tauri.conf.json, capabilities, models serde)",
+    "SQL (db/schema.rs migrations)",
+    "Markdown (docs, AGENTS.md, comments)"
+  ]
+}
