@@ -1,10 +1,13 @@
 ---
 phase: 1
 slug: broadcast-ui-state
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-07-08
+reviewed_at: 2026-07-08
+review_verdict: APPROVED (4 PASS, 2 FLAG non-blocking, 0 BLOCK)
+review_flags: Typography (字重表格 500 vs prose 400/700 一致性); Spacing (6px padding 继承 EditPane 先例，非标准集)
 ---
 
 # Phase 1 — UI Design Contract: Broadcast UI & State
