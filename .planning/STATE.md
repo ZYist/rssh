@@ -23,7 +23,7 @@ See: .planning/PROJECT.md (updated 2026-07-08)
 Phase: 1 of 2 (Broadcast UI & State)
 Plan: 0 of TBD in current phase
 Status: Ready to plan
-Last activity: 2026-07-08 — Roadmap created
+Last activity: 2026-07-08 — Project initialized (2-phase roadmap + project guide)
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -67,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-07-08
-Stopped at: Roadmap created, ready to plan Phase 1
+Stopped at: Project initialized, ready to plan Phase 1
 Resume file: None
