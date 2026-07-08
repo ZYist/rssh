@@ -6,15 +6,15 @@ current_phase: 01
 current_phase_name: broadcast-ui-state
 status: executing
 stopped_at: Plan 01-01 complete; next Plan 01-02 (Wave 2)
-last_updated: "2026-07-08T12:27:00.000Z"
+last_updated: "2026-07-08T12:43:31.512Z"
 last_activity: 2026-07-08
-last_activity_desc: Plan 01-01 executed (broadcast state foundation + selector extraction)
+last_activity_desc: Plan 01-01 executed (broadcast state foundation + BroadcastTargetSelector extraction + EditPane refactor)
 progress:
   total_phases: 2
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
-  percent: 25
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State
@@ -54,6 +54,8 @@ Progress: [██░░░░░░░░] 25%
 - Last 5 plans: 01-01 (~9 min)
 - Trend: baseline (first plan)
 
+| Phase 01 P02 | 4min | 2 tasks | 3 files |
+
 ## Accumulated Context
 
 ### Decisions
@@ -69,6 +71,9 @@ Recent decisions affecting current work:
 - BroadcastTargetSelector is controlled (5 required + 2 optional hover props); D-04 keeps Broadcast(N) button EditPane-exclusive
 - All targets mutators rebuild Set + replace whole record + reassign _broadcastByTab (Svelte 5 $state Set reactivity pitfall)
 - store.svelte.ts keeps zero reactive-effect calls; prune $effect lives in ChatPanel (Plan 01-02)
+- [Phase 01]: ChatPanel broadcast toggle between clear and DangerModeToggle; accent active state (D-08 not red) + count badge
+- [Phase 01]: Broadcast target bar collapsible (D-03): collapse hides list, keeps title row + N/M count + chevron
+- [Phase 01]: prune effect in ChatPanel host (D-11); store keeps zero reactive-effect invariant
 
 ### Pending Todos
 
@@ -80,6 +85,6 @@ None yet. (Plan 01-01 done; Plan 01-02 ready — Wave 2.)
 
 ## Session Continuity
 
-Last session: 2026-07-08T12:27:00Z
+Last session: 2026-07-08T12:42:21.312Z
 Stopped at: Plan 01-01 complete; next Plan 01-02 (Wave 2)
 Resume file: .planning/phases/01-broadcast-ui-state/01-02-PLAN.md

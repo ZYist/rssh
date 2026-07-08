@@ -11,7 +11,7 @@ AI Broadcast Mode extends RSSH's AI panel so that approved commands fan out to m
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Broadcast UI & State** - Toggle button, target selector, and per-tab state persistence in the AI panel
+- [x] **Phase 1: Broadcast UI & State** - Toggle button, target selector, and per-tab state persistence in the AI panel (completed 2026-07-08)
 - [ ] **Phase 2: Broadcast Dispatch & Safety** - Post-approval command fan-out to selected targets with parallel execution and output isolation
 
 ## Phase Details
@@ -29,7 +29,7 @@ AI Broadcast Mode extends RSSH's AI panel so that approved commands fan out to m
   3. User can check/uncheck individual terminal tabs as broadcast targets
   4. Broadcast toggle state and target selections persist when switching between tabs or closing/reopening the AI panel
 
-**Plans**: 2 plans
+**Plans**: 2/2 plans complete
 Plans:
 **Wave 1**
 
@@ -37,7 +37,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-02-PLAN.md — ChatPanel 广播开关按钮 + 可折叠目标条 + prune $effect + en/zh i18n 双语 key（交付 Phase 1 全部 4 条用户可见 Success Criteria）
+- [x] 01-02-PLAN.md — ChatPanel 广播开关按钮 + 可折叠目标条 + prune $effect + en/zh i18n 双语 key（交付 Phase 1 全部 4 条用户可见 Success Criteria）
 
 **UI hint**: yes
 
@@ -63,5 +63,5 @@ Phases execute in numeric order: 1 -> 2
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Broadcast UI & State | 1/2 | In progress | - |
+| 1. Broadcast UI & State | 2/2 | Complete   | 2026-07-08 |
 | 2. Broadcast Dispatch & Safety | 0/TBD | Not started | - |
