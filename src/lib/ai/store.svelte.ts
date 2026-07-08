@@ -76,6 +76,29 @@ let _keyboardLockedByTab = $state<Record<string, boolean>>({});
  * already billed; the counter tracks money, not context size.
  */
 let _tokensByTab = $state<Record<string, TokenUsage>>({});
+
+/**
+ * Per-tab 广播模式状态（D-10）。按 AI 会话的 tab_id 索引，in-memory，跨 app
+ * 重启不持久化（v2）。与 _sessionByTab 等同寿命——主标签关闭时 stopSession
+ * 的 delete 簇连带清掉这一条（D-11 主标签路径）。
+ *
+ * Set<string> targets 反应性陷阱：Svelte 5 的 $state 代理不拦截 Set 方法，
+ * 所有改 targets 的 mutator 必须「重建 Set → 整体替换 record 条目 → 重新赋值
+ * 整个 _broadcastByTab」三步（沿 EditPane.svelte:29-37 + 本文件 rebindTarget
+ * :285-289 合并先例）。原地 .add()/.delete() 会静默失效。
+ */
+interface BroadcastState {
+  enabled: boolean;
+  barCollapsed: boolean;
+  targets: Set<string>;
+}
+let _broadcastByTab = $state<Record<string, BroadcastState>>({});
+const DEFAULT_BROADCAST: BroadcastState = {
+  enabled: false,
+  barCollapsed: false,
+  targets: new Set(),
+};
+
 let _settings = $state<AiSettings | null>(null);
 /**
  * tab_id → 终端类型映射。internal_command 自动执行时需要知道走 ssh_write
@@ -325,6 +348,86 @@ export function isKeyboardLocked(tab_id: string): boolean {
 }
 export function tokenUsage(tab_id: string): TokenUsage {
   return _tokensByTab[tab_id] ?? { tokens_in: 0, tokens_out: 0 };
+}
+
+// ─── Broadcast mode per-tab state（D-10）─────────────────────────────
+// Getter 命名沿既有「动词短语、无 get 前缀」规范（sessionForTab / pendingCommand /
+// tokenUsage 先例）。返回的 BroadcastState 是只读快照——调用方不得原地改
+// 返回的 targets Set（反应性会静默失效，见上面 _broadcastByTab 注释）。
+
+export function broadcastState(tabId: string): BroadcastState {
+  return _broadcastByTab[tabId] ?? DEFAULT_BROADCAST;
+}
+export function broadcastEnabled(tabId: string): boolean {
+  return broadcastState(tabId).enabled;
+}
+export function broadcastTargets(tabId: string): Set<string> {
+  return broadcastState(tabId).targets;
+}
+
+export function toggleBroadcast(tabId: string): void {
+  const prev = broadcastState(tabId);
+  _broadcastByTab = {
+    ..._broadcastByTab,
+    [tabId]: { ...prev, enabled: !prev.enabled },
+  };
+}
+
+export function setBroadcastBarCollapsed(tabId: string, collapsed: boolean): void {
+  const prev = broadcastState(tabId);
+  _broadcastByTab = {
+    ..._broadcastByTab,
+    [tabId]: { ...prev, barCollapsed: collapsed },
+  };
+}
+
+export function toggleBroadcastTarget(tabId: string, targetTabId: string): void {
+  const prev = broadcastState(tabId);
+  const next = new Set(prev.targets);
+  if (next.has(targetTabId)) next.delete(targetTabId);
+  else next.add(targetTabId);
+  _broadcastByTab = {
+    ..._broadcastByTab,
+    [tabId]: { ...prev, targets: next },
+  };
+}
+
+export function setBroadcastTargets(tabId: string, ids: Set<string>): void {
+  const prev = broadcastState(tabId);
+  _broadcastByTab = {
+    ..._broadcastByTab,
+    [tabId]: { ...prev, targets: new Set(ids) },
+  };
+}
+
+/**
+ * D-11 target-tab 关闭路径：剔除 targets 里已不存在的 tabId。由宿主组件
+ * （ChatPanel Plan 01-02 / EditPane 本地）的 reactive effect 在 connectedSessions()
+ * 变化时调用——本 store 模块顶层不跑副作用（Pitfall 2：effect 只能在组件 init
+ * 上下文里执行），所有 reactive 副作用入口都在组件里。
+ *
+ * 若 diff 后大小未变则 early-return 不触发赋值——防 spurious 反应（Pitfall 1）。
+ * record 不存在时同样 early-return（DEFAULT_BROADCAST.targets 是空 Set，filter
+ * 后还是空，size 相等）。
+ */
+export function pruneBroadcastTargets(tabId: string, activeTabIds: Set<string>): void {
+  const prev = _broadcastByTab[tabId];
+  if (!prev) return;
+  const next = new Set([...prev.targets].filter((id) => activeTabIds.has(id)));
+  if (next.size === prev.targets.size) return;
+  _broadcastByTab = {
+    ..._broadcastByTab,
+    [tabId]: { ...prev, targets: next },
+  };
+}
+
+/**
+ * D-11 主标签关闭路径：整体丢弃该 tab 的广播 record。与 prune 是两条不同
+ * 路径（prune 清 target；这里清整条 primary record）。由 stopSession delete
+ * 簇调用——防内存泄漏 + 防 tabId 被复用时读到旧广播状态。
+ */
+export function clearBroadcastState(tabId: string): void {
+  delete _broadcastByTab[tabId];
 }
 
 function pushChat(tab_id: string, item: ChatItem, persist = true) {
@@ -760,6 +863,8 @@ function clearSessionState(tab_id: string) {
   delete _pendingContextChangeByTab[tab_id];
   delete _chatByTab[tab_id];
   delete _tokensByTab[tab_id];
+  delete _broadcastByTab[tab_id]; // D-11 主标签关闭：连带清掉它的广播 record
+  if (_activeTabId === tab_id) _activeTabId = null;
 }
 
 export function stopSession(tab_id: string): Promise<void> {
