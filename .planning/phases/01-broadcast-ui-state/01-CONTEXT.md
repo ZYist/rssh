@@ -25,26 +25,26 @@
 ## Implementation Decisions
 
 ### 目标选择器呈现（D-01 ~ D-03）
-- **D-01：复用 EditPane 现成广播选择器 UX。** 不另起炉灶设计新交互。把 `src/lib/components/EditPane.svelte` 里 `.session-panel` 的**目标列表部分**抽成一个共享组件（暂称 `BroadcastTargetSelector.svelte`），EditPane 与 ChatPanel **同时使用它**（DRY，而非复制粘贴）。复用：`SessionMinimap` 缩略图 + 类型图标（SSH/`$`/`⎓`/`T`）+ 标签 + accent 光晕选中态 + "全选/全不选" 链接按钮。
-- **D-02：AI 面板里以"工具栏下方内联条"呈现。** AI 面板（`.ai-side`）宽 280–380px（默认 380、可拖拽、min 280），EditPane 的 200px 右侧栏放不下。广播 ON → 内联条在工具栏下方展开（把对话区往下挤）；OFF → 整条隐藏。
-- **D-03：目标条可折叠。** 广播 ON 时用户可临时收起目标条腾出对话区，广播保持开启。折叠时工具栏开关按钮的计数徽章是唯一状态反馈。
-- **D-04：不带 EditPane 的 `Broadcast(N)` 动作按钮。** EditPane 底部那个按钮是"立即发送编辑器文本"，属立即触发语义；AI 面板的分发发生在 Phase 2 命令审批时，Phase 1 这条只负责**选目标**，不放发送按钮。目标数量由开关徽章显示。
+- **D-01:复用 EditPane 现成广播选择器 UX。** 不另起炉灶设计新交互。把 `src/lib/components/EditPane.svelte` 里 `.session-panel` 的**目标列表部分**抽成一个共享组件（暂称 `BroadcastTargetSelector.svelte`），EditPane 与 ChatPanel **同时使用它**（DRY，而非复制粘贴）。复用：`SessionMinimap` 缩略图 + 类型图标（SSH/`$`/`⎓`/`T`）+ 标签 + accent 光晕选中态 + "全选/全不选" 链接按钮。
+- **D-02:AI 面板里以"工具栏下方内联条"呈现。** AI 面板（`.ai-side`）宽 280–380px（默认 380、可拖拽、min 280），EditPane 的 200px 右侧栏放不下。广播 ON → 内联条在工具栏下方展开（把对话区往下挤）；OFF → 整条隐藏。
+- **D-03:目标条可折叠。** 广播 ON 时用户可临时收起目标条腾出对话区，广播保持开启。折叠时工具栏开关按钮的计数徽章是唯一状态反馈。
+- **D-04:不带 EditPane 的 `Broadcast(N)` 动作按钮。** EditPane 底部那个按钮是"立即发送编辑器文本"，属立即触发语义；AI 面板的分发发生在 Phase 2 命令审批时，Phase 1 这条只负责**选目标**，不放发送按钮。目标数量由开关徽章显示。
 
 ### 主标签（源）处理（D-05）
-- **D-05：隐藏主标签。** 承载 AI 面板的标签是广播的"源"（AI 只读它的输出，Phase 2 命令也由它经 `executeCommand` 执行）。选择器里**不出现主标签自己**，只列 `app.connectedSessions()` 中"除主标签 session 外"的终端。计数 `N/M` 的 M = 除主标签外的终端数；仅主标签存在时显示空状态"没有其它终端"。
+- **D-05:隐藏主标签。** 承载 AI 面板的标签是广播的"源"（AI 只读它的输出，Phase 2 命令也由它经 `executeCommand` 执行）。选择器里**不出现主标签自己**，只列 `app.connectedSessions()` 中"除主标签 session 外"的终端。计数 `N/M` 的 M = 除主标签外的终端数；仅主标签存在时显示空状态"没有其它终端"。
 
 ### Raw device 处理（D-06）
-- **D-06：Phase 1 照常列出、照常可勾。** Serial/Telnet 与 SSH/local 一视同仁地出现在选择器里、可勾选。符合 BCAST-02/03 字面要求（"列出所有终端标签""可勾选任意终端标签"）+ 与"复用 EditPane"一致（EditPane 现状即如此）。Raw device 的安全默认排除完整留给 **v2**。Phase 1 用户自行决定是否勾选 raw 标签。
+- **D-06:Phase 1 照常列出、照常可勾。** Serial/Telnet 与 SSH/local 一视同仁地出现在选择器里、可勾选。符合 BCAST-02/03 字面要求（"列出所有终端标签""可勾选任意终端标签"）+ 与"复用 EditPane"一致（EditPane 现状即如此）。Raw device 的安全默认排除完整留给 **v2**。Phase 1 用户自行决定是否勾选 raw 标签。
 
 ### 开关按钮外观（D-07 ~ D-09）
-- **D-07：工具栏 `.btn-icon`，发射塔/广播波图标。** 16×16 手绘 stroke SVG，`currentColor`，`stroke-width=2`，跟现有工具栏图标（audit/clear/danger）视觉重量一致。概念选"发射塔/广播波"（一源辐射多目标，最贴广播语义）；实现时从 lucide/feather 风格中取最贴合的具体形（如 radio-tower / radio），保持 stroke 风格统一。
-- **D-08：激活态用 accent 色（非红）。** 跟全 app 的"选中/激活"语义一致。**严禁用红色**——红色是 `DangerModeToggle` 的危险语义，广播是常规功能态，混用会误导。
-- **D-09：带目标计数徽章。** 按钮右下角小圆徽显示已选目标数。0 个目标时徽标置灰或隐藏。因目标条可折叠（D-03），徽章是折叠时唯一的状态反馈。
+- **D-07:工具栏 `.btn-icon`，发射塔/广播波图标。** 16×16 手绘 stroke SVG，`currentColor`，`stroke-width=2`，跟现有工具栏图标（audit/clear/danger）视觉重量一致。概念选"发射塔/广播波"（一源辐射多目标，最贴广播语义）；实现时从 lucide/feather 风格中取最贴合的具体形（如 radio-tower / radio），保持 stroke 风格统一。
+- **D-08:激活态用 accent 色（非红）。** 跟全 app 的"选中/激活"语义一致。**严禁用红色**——红色是 `DangerModeToggle` 的危险语义，广播是常规功能态，混用会误导。
+- **D-09:带目标计数徽章。** 按钮右下角小圆徽显示已选目标数。0 个目标时徽标置灰或隐藏。因目标条可折叠（D-03），徽章是折叠时唯一的状态反馈。
 
 ### 状态与生命周期（D-10 ~ D-12，沿代码先例）
-- **D-10：状态放 `src/lib/ai/store.svelte.ts`，per-tab，in-memory。** 广播开关布尔 + 目标 tabId 集合，按 AI 会话的 tabId 索引。切 tab / 关重开 AI 面板保持；跨 app 重启不持久化（v2）。**不放 `app.svelte.ts`**（PROJECT/STATE 锁定：广播是 AI 面板语义，跟 AI 会话同寿命）。
-- **D-11：关闭的目标 tab 自动从选择里剔除。** 复用 EditPane 的 `$effect` prune 先例（`app.connectedSessions()` 变化时剔除已不存在的 tabId）。
-- **D-12：新开的终端 tab 不自动选中。** 新 session 出现在列表里但默认不勾，用户主动勾选（与 EditPane 行为一致）。"全选"= 选全部"除主标签外"的目标。
+- **D-10:状态放 `src/lib/ai/store.svelte.ts`，per-tab，in-memory。** 广播开关布尔 + 目标 tabId 集合，按 AI 会话的 tabId 索引。切 tab / 关重开 AI 面板保持；跨 app 重启不持久化（v2）。**不放 `app.svelte.ts`**（PROJECT/STATE 锁定：广播是 AI 面板语义，跟 AI 会话同寿命）。
+- **D-11:关闭的目标 tab 自动从选择里剔除。** 复用 EditPane 的 `$effect` prune 先例（`app.connectedSessions()` 变化时剔除已不存在的 tabId）。
+- **D-12:新开的终端 tab 不自动选中。** 新 session 出现在列表里但默认不勾，用户主动勾选（与 EditPane 行为一致）。"全选"= 选全部"除主标签外"的目标。
 
 ### Claude's Discretion
 - 具体 state 字段形状（如 `Map<tabId, { enabled: boolean; targets: Set<string> }>` 还是分两个导出）—— 由 planner/researcher 按 `ai/store.svelte.ts` 现有 per-tab 结构（如 `_sessions` 模式）对齐。
