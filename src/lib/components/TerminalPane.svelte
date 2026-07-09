@@ -778,7 +778,8 @@
             streamSendText(normalized);
             return;
         }
-        invoke(writeCmd, { sessionId, data: Array.from(new TextEncoder().encode(text)) });
+        void invoke(writeCmd, { sessionId, data: Array.from(new TextEncoder().encode(text)) })
+            .catch((e) => console.warn("[broadcast] sendText 写入失败:", e));
     }
 
     function pasteText(text: string) {
