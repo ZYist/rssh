@@ -4,6 +4,7 @@
     import * as ai from "./store.svelte.ts";
     import { commandApprovals, isAutoApprovalAllowed } from "./command-approval.ts";
     import type { SessionInstanceRef } from "./session-identity.ts";
+    import * as app from "../stores/app.svelte.ts";
     import { t, errMsg } from "../i18n/index.svelte.ts";
     import { toast } from "../stores/toast.svelte.ts";
     import type { AiTargetKind, CommandProposed, CommandResult } from "./types.ts";
@@ -55,6 +56,20 @@
     // 自动批准只由当前可见 tab 发起。ChatPanel 现在会保活隐藏 tab；如果仍在 onMount
     // 无条件批准，后台 tab 的命令会比旧行为更早执行。active 变 true 时 effect 再检查，
     // UI 上"提议→执行"全程可见，审计 trail 与原行为不变。
+
+    /** D-02: 广播目标含任一 raw device（serial/telnet）→ 自动批准降级为人工 dialog。
+     *  既有 raw device 安全约束的延伸（raw 黑名单对 reload/erase startup-config 失效），
+     *  非广播开关引入的额外审批。只在 onMount 时调一次，不建立响应性订阅。 */
+    function hasRawBroadcastTarget(): boolean {
+        if (!ai.broadcastEnabled(tabId)) return false;
+        const targets = ai.broadcastTargets(tabId);
+        if (targets.size === 0) return false;
+        const sessions = app.connectedSessions();
+        return [...targets].some(tid => {
+            const s = sessions.find(s => s.tabId === tid);
+            return s ? isRawDeviceKind(s.type) : false;
+        });
+    }
     //
     // 重入防御：组件可能被销毁重建（chat list 重新 key 等）。
     // 重建实例的 executing=false，单看 executing 拦不住同一命令卡第二次 approve
@@ -129,6 +144,9 @@
             // to auto-paste into — and the POSIX-oriented blacklist can't catch
             // network-OS dangers (`reload`, `erase startup-config`). Always ask.
             && !isRawDeviceKind(targetKind)
+            // D-02: 广播目标含任一 raw device 时也降级为人工 dialog（既有 raw
+            // 安全约束延伸，非广播开关的额外审批）。
+            && !hasRawBroadcastTarget()
             && !ai.isCommandRunning(sessionRef(), cmd.id)
             && !commandApprovals.isAcknowledged(sessionRef(), cmd.id)
             && !commandApprovals.wasAttempted(sessionRef(), cmd.id)
@@ -186,6 +204,16 @@
                 }
                 return;
             }
+            // D-01: 广播分发——主标签走 executeCommand（带 sentinel），所有勾选目标
+            // 经 broadcastToSessions 收到 raw cmd.cmd + 换行（不含 sentinel，避免目标
+            // shell 残留 echo）。fire-and-forget 同步 for 循环，在 await 之前完成排队，
+            // 主标签执行与广播目标执行天然并行（BCAST-05/06）。
+            if (ai.broadcastEnabled(tabId)) {
+                const targets = ai.broadcastTargets(tabId);
+                if (targets.size > 0) {
+                    app.broadcastToSessions([...targets], cmd.cmd + "\n");
+                }
+            }
             const liveTargetSessionId = targetSessionId;
             if (!liveTargetSessionId) throw new Error(t("common.disconnected"));
             await ai.executeCommand(session, cmd, targetKind, liveTargetSessionId);
@@ -238,6 +266,16 @@
         if (terminating) return;
         terminating = true;
         try {
+            // D-03: 对称终止——广播开启时向所有广播目标发 \x03（Ctrl+C），再
+            // 终止主标签。避免目标机器在主标签被中断后继续跑已广播的命令。
+            // \x03 是单字节 ETX（U+0003），normalizeOutgoing 仅匹配换行符不破坏它，
+            // 对所有 transport 字节级安全（02-RESEARCH §D-03 已逐层追踪）。
+            if (ai.broadcastEnabled(tabId)) {
+                const targets = ai.broadcastTargets(tabId);
+                if (targets.size > 0) {
+                    app.broadcastToSessions([...targets], "\x03");
+                }
+            }
             await ai.terminateCommand(sessionRef(), cmd.id);
             syncExecutionStatus();
         } catch (e) {
