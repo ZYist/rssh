@@ -8,7 +8,7 @@
   import { shell } from "@codemirror/legacy-modes/mode/shell";
   import { tags as t } from "@lezer/highlight";
   import * as app from "../stores/app.svelte.ts";
-  import SessionMinimap from "./SessionMinimap.svelte";
+  import BroadcastTargetSelector from "./BroadcastTargetSelector.svelte";
   import SessionPreviewPopover from "./SessionPreviewPopover.svelte";
   import { pickBroadcastText } from "../terminal/broadcast-text.ts";
 
@@ -37,12 +37,15 @@
   function selectNone() { selectedTabIds = new Set(); }
 
   // Hover preview: track which thumbnail the mouse is over + its on-screen box,
-  // so the popover can anchor to it. Cleared on mouseleave.
+  // so the popover can anchor to it. Cleared on mouseleave. The signature takes
+  // the anchor element directly (the shared BroadcastTargetSelector forwards
+  // e.currentTarget as the anchor from its own onmouseenter) — zero behavior
+  // change vs the pre-refactor inline handler.
   let hoveredTabId = $state<string | null>(null);
   let hoverAnchor = $state<DOMRect | null>(null);
-  function onHover(tid: string, e: MouseEvent) {
+  function onHover(tid: string, anchor: HTMLElement) {
     hoveredTabId = tid;
-    hoverAnchor = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    hoverAnchor = anchor.getBoundingClientRect();
   }
   function clearHover() { hoveredTabId = null; hoverAnchor = null; }
 
@@ -138,34 +141,15 @@
   <div class="session-panel">
     <div class="panel-header">Target Sessions</div>
 
-    {#if sessions.length === 0}
-      <div class="empty-hint">No connected sessions</div>
-    {:else}
-      <div class="session-list">
-        {#each sessions as s (s.tabId)}
-          <button
-            type="button"
-            class="session-item"
-            class:selected={selectedTabIds.has(s.tabId)}
-            aria-pressed={selectedTabIds.has(s.tabId)}
-            onclick={() => toggle(s.tabId)}
-            onmouseenter={(e) => onHover(s.tabId, e)}
-            onmouseleave={clearHover}
-            title={s.label}
-          >
-            <SessionMinimap tabId={s.tabId} />
-            <span class="session-meta">
-              <span class="session-type">{s.type === "local" ? "$" : s.type === "serial" ? "⎓" : s.type === "telnet" ? "T" : "SSH"}</span>
-              <span class="session-label">{s.label}</span>
-            </span>
-          </button>
-        {/each}
-      </div>
-      <div class="select-actions">
-        <button class="link-btn" onclick={selectAll}>All</button>
-        <button class="link-btn" onclick={selectNone}>None</button>
-      </div>
-    {/if}
+    <BroadcastTargetSelector
+      sessions={sessions}
+      selectedIds={selectedTabIds}
+      onToggle={toggle}
+      onSelectAll={selectAll}
+      onSelectNone={selectNone}
+      onHover={onHover}
+      onHoverLeave={clearHover}
+    />
 
     <button
       class="broadcast-btn"
@@ -216,87 +200,6 @@
     padding-bottom: 4px;
     border-bottom: 1px solid var(--divider);
   }
-
-  .empty-hint {
-    font-size: 12px;
-    color: var(--text-dim);
-    padding: 8px 0;
-  }
-
-  .session-list {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .session-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 6px;
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 12px;
-    color: var(--text-sub);
-    background: none;
-    text-align: left;
-    transition: background 0.1s, border-color 0.1s, box-shadow 0.1s;
-  }
-  .session-item:hover { background: var(--surface); color: var(--text); }
-
-  /* Selected = the codebase's halo language (see TerminalPane .block-halo):
-     a solid accent edge carries the signal, the outer glow is just gravy — so
-     selection stays legible even where WKWebView weakens box-shadow blur. */
-  .session-item.selected {
-    color: var(--text);
-    border-color: var(--accent);
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
-    box-shadow: 0 0 0 1px var(--accent),
-                0 0 12px -2px color-mix(in srgb, var(--accent) 65%, transparent);
-  }
-
-  .session-meta {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-  }
-
-  .session-type {
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--accent);
-    min-width: 28px;
-  }
-
-  .session-label {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .select-actions {
-    display: flex;
-    gap: 8px;
-    padding: 4px 0;
-  }
-
-  .link-btn {
-    background: none;
-    border: none;
-    color: var(--accent);
-    font-size: 12px;
-    font-family: inherit;
-    cursor: pointer;
-    padding: 0;
-  }
-  .link-btn:hover { text-decoration: underline; }
 
   .broadcast-btn {
     margin-top: auto;

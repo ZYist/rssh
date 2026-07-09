@@ -8,6 +8,7 @@ import {
   backspaceBytes,
   remapEditingKeys,
   normalizeOutgoing,
+  normalizePtyOutgoing,
 } from "./serial-transforms";
 
 describe("inputNewline", () => {
@@ -113,6 +114,28 @@ describe("normalizeOutgoing", () => {
   it("leaves text without line breaks untouched", () => {
     expect(normalizeOutgoing("plain text", "cr")).toBe("plain text");
     expect(normalizeOutgoing("", "crlf")).toBe("");
+  });
+});
+
+describe("normalizePtyOutgoing", () => {
+  it("turns a trailing LF into CR (broadcast/snippet submit on PowerShell)", () => {
+    // 02-UAT test 2: cmd.cmd + "\n" must become <cmd>\r so ConPTY/PowerShell
+    // accepts Enter instead of leaving the command at the prompt.
+    expect(normalizePtyOutgoing("Get-Date\n")).toBe("Get-Date\r");
+  });
+  it("collapses CRLF to a single CR (no doubling under ICRNL)", () => {
+    expect(normalizePtyOutgoing("a\r\nb")).toBe("a\rb");
+    expect(normalizePtyOutgoing("a\r\nb\r")).toBe("a\rb\r");
+  });
+  it("turns every line break into one CR for multi-line text", () => {
+    expect(normalizePtyOutgoing("line1\nline2\nline3")).toBe("line1\rline2\rline3");
+  });
+  it("preserves a lone CR unchanged", () => {
+    expect(normalizePtyOutgoing("lone\rcr")).toBe("lone\rcr");
+  });
+  it("leaves text without line breaks untouched", () => {
+    expect(normalizePtyOutgoing("plain text")).toBe("plain text");
+    expect(normalizePtyOutgoing("")).toBe("");
   });
 });
 

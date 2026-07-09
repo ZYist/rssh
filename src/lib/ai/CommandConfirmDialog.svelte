@@ -14,6 +14,7 @@
     import { onMount } from "svelte";
     import { invoke } from "@tauri-apps/api/core";
     import * as ai from "./store.svelte.ts";
+    import * as app from "../stores/app.svelte.ts";
     import { t, errMsg } from "../i18n/index.svelte.ts";
     import type { AiSettings, AiTargetKind, CommandKind, CommandProposed, CommandResult } from "./types.ts";
     import { isRawDeviceKind } from "./types.ts";
@@ -68,6 +69,20 @@
         }
     }
 
+    /** D-02: 广播目标含任一 raw device（serial/telnet）→ 自动批准降级为人工 dialog。
+     *  既有 raw device 安全约束的延伸（raw 黑名单对 reload/erase startup-config 失效），
+     *  非广播开关引入的额外审批。只在 onMount 时调一次，不建立响应性订阅。 */
+    function hasRawBroadcastTarget(): boolean {
+        if (!ai.broadcastEnabled(tabId)) return false;
+        const targets = ai.broadcastTargets(tabId);
+        if (targets.size === 0) return false;
+        const sessions = app.connectedSessions();
+        return [...targets].some(tid => {
+            const s = sessions.find(s => s.tabId === tid);
+            return s ? isRawDeviceKind(s.type) : false;
+        });
+    }
+
     // 自动批准：每次新 command 进 chat 会创建一个新的 CommandConfirmDialog 实例，
     // onMount 触发一次按 kind 查 settings.auto_<kind>。UI 上"提议→执行"全程可见，
     // 审计 trail 完整；后端 emit 流程不变。挂载时若已有 result/rejected（历史记录
@@ -101,6 +116,9 @@
             // to auto-paste into — and the POSIX-oriented blacklist can't catch
             // network-OS dangers (`reload`, `erase startup-config`). Always ask.
             && !isRawDeviceKind(targetKind)
+            // D-02: 广播目标含任一 raw device 时也降级为人工 dialog（既有 raw
+            // 安全约束延伸，非广播开关的额外审批）。
+            && !hasRawBroadcastTarget()
             && !ai.isCommandRunning(cmd.tool_call_id)
             && !_ackedToolCalls.has(cmd.tool_call_id)
             && autoApproveAllowed(ai.settings(), cmd.kind)
@@ -149,6 +167,16 @@
                 }
                 return;
             }
+            // D-01: 广播分发——主标签走 executeCommand（带 sentinel），所有勾选目标
+            // 经 broadcastToSessions 收到 raw cmd.cmd + 换行（不含 sentinel，避免目标
+            // shell 残留 echo）。fire-and-forget 同步 for 循环，在 await 之前完成排队，
+            // 主标签执行与广播目标执行天然并行（BCAST-05/06）。
+            if (ai.broadcastEnabled(tabId)) {
+                const targets = ai.broadcastTargets(tabId);
+                if (targets.size > 0) {
+                    app.broadcastToSessions([...targets], cmd.cmd + "\n");
+                }
+            }
             await ai.executeCommand(tabId, cmd, targetKind, targetSessionId);
         } catch (e) {
             console.error("[ai] execute failed:", e);
@@ -183,6 +211,16 @@
         if (terminating) return;
         terminating = true;
         try {
+            // D-03: 对称终止——广播开启时向所有广播目标发 \x03（Ctrl+C），再
+            // 终止主标签。避免目标机器在主标签被中断后继续跑已广播的命令。
+            // \x03 是单字节 ETX（U+0003），normalizeOutgoing 仅匹配换行符不破坏它，
+            // 对所有 transport 字节级安全（02-RESEARCH §D-03 已逐层追踪）。
+            if (ai.broadcastEnabled(tabId)) {
+                const targets = ai.broadcastTargets(tabId);
+                if (targets.size > 0) {
+                    app.broadcastToSessions([...targets], "\x03");
+                }
+            }
             await ai.terminateCommand(cmd.tool_call_id);
         } catch (e) {
             console.error("[ai] terminate failed:", e);

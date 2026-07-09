@@ -1,10 +1,12 @@
 <script lang="ts">
     import * as ai from "./store.svelte.ts";
+    import * as app from "../stores/app.svelte.ts";
     import type { AiTargetKind, ChatItem, ConversationMeta } from "./types.ts";
     import CommandConfirmDialog from "./CommandConfirmDialog.svelte";
     import AuditPanel from "./AuditPanel.svelte";
     import Modal from "../components/Modal.svelte";
     import DangerModeToggle from "./DangerModeToggle.svelte";
+    import BroadcastTargetSelector from "../components/BroadcastTargetSelector.svelte";
     import { renderMarkdown } from "./markdown.ts";
     import { formatTokenCount } from "./tokens.ts";
     import { t, errMsg } from "../i18n/index.svelte.ts";
@@ -45,6 +47,21 @@
     // 该 profile 下持久化的历史对话 —— 仅会话未启动时展示（picker）。
     // null = 还没加载完，与空数组（确无历史）区分，避免列表闪现。
     let conversations = $state<ConversationMeta[] | null>(null);
+
+    // ── 广播模式状态（Plan 01-01 的 per-tab store，这里只读快照 + 委托 mutator）──
+    // D-05: sessions 过滤掉主标签自身（承载 AI 面板的 tabId），只列其它已连接终端。
+    let bState = $derived(ai.broadcastState(tabId));
+    let broadcastOn = $derived(bState.enabled);
+    let selectedCount = $derived(bState.targets.size);
+    let sessions = $derived(app.connectedSessions().filter(s => s.tabId !== tabId));
+    let totalCount = $derived(sessions.length);
+    // D-11: 目标 tab 被关闭时自动从选择剔除。store 不持 reactive effect（Plan 01-01
+    // 不变量），故副作用入口放在宿主组件 init 上下文；面板关闭 effect 销毁，状态在
+    // 模块级 store 存活，重开重生。
+    $effect(() => {
+        const activeIds = new Set(sessions.map(s => s.tabId));
+        ai.pruneBroadcastTargets(tabId, activeIds);
+    });
 
     onMount(async () => {
         // 只拉 settings（提示词标题的 danger 旗等要它）。不在这里预启 session ——
@@ -280,6 +297,25 @@
                 <path d="M15 13 L11 19.5"/>
             </svg>
         </button>
+        <!-- Broadcast-mode toggle (Plan 01-02): per-tab UI state via ai store, no
+             confirm modal / never disabled (broadcast is not a footgun, just config).
+             Active state uses --accent (NOT --error red — D-08, avoid danger confusion). -->
+        <button class="btn-icon broadcast-toggle" class:on={broadcastOn}
+                onclick={() => ai.toggleBroadcast(tabId)}
+                title={broadcastOn ? t("ai.toolbar.broadcast_on_tip") : t("ai.toolbar.broadcast_enable")}
+                aria-label={broadcastOn ? `${t("ai.toolbar.broadcast_aria")}, ${selectedCount}/${totalCount}` : t("ai.toolbar.broadcast_aria")}
+                aria-pressed={broadcastOn}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/>
+                <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/>
+                <circle cx="12" cy="12" r="2"/>
+                <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/>
+                <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/>
+            </svg>
+            {#if broadcastOn && selectedCount > 0}
+                <span class="badge" aria-hidden="true">{selectedCount}</span>
+            {/if}
+        </button>
         <!-- Danger-mode toggle: always visible, selected (red) when ON. The toggle
              logic + confirm modal live in DangerModeToggle (shared with AiSettings —
              one safety contract); here we only render the icon. No disabled={!session}
@@ -305,6 +341,32 @@
         <div class="banner">
             <span>{banner}</span>
             <button class="btn-icon" onclick={() => (banner = null)}>×</button>
+        </div>
+    {/if}
+
+    {#if broadcastOn}
+        <div class="broadcast-bar" role="group" aria-label={t("ai.broadcast.title")}>
+            <div class="bar-header" role="button" tabindex="0"
+                 aria-expanded={!bState.barCollapsed}
+                 aria-label={bState.barCollapsed ? t("ai.broadcast.expand") : t("ai.broadcast.collapse")}
+                 onclick={() => ai.setBroadcastBarCollapsed(tabId, !bState.barCollapsed)}
+                 onkeydown={(e: KeyboardEvent) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ai.setBroadcastBarCollapsed(tabId, !bState.barCollapsed); } }}>
+                <svg class="chevron" class:rotated={bState.barCollapsed} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+                <span class="bar-title">{t("ai.broadcast.title")}</span>
+                <span class="bar-count">{t("ai.broadcast.count", { selected: selectedCount, total: totalCount })}</span>
+            </div>
+            {#if !bState.barCollapsed}
+                <div class="bar-list">
+                    <BroadcastTargetSelector
+                        sessions={sessions}
+                        selectedIds={bState.targets}
+                        onToggle={(tid) => ai.toggleBroadcastTarget(tabId, tid)}
+                        onSelectAll={() => ai.setBroadcastTargets(tabId, new Set(sessions.map(s => s.tabId)))}
+                        onSelectNone={() => ai.setBroadcastTargets(tabId, new Set())} />
+                </div>
+            {/if}
         </div>
     {/if}
 
@@ -495,6 +557,49 @@
         flex-shrink: 0;
     }
     .banner span { flex: 1; word-break: break-word; }
+
+    /* Broadcast-mode toggle (D-07/D-08): mirrors .danger-toggle.on but swaps the
+       error-red for --accent — broadcast is a regular mode, not a danger signal. */
+    .broadcast-toggle { position: relative; }
+    .broadcast-toggle.on {
+        color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    .broadcast-toggle.on:hover {
+        color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+    /* Selected-target count badge (D-09): only rendered when count > 0. */
+    .broadcast-toggle .badge {
+        position: absolute; bottom: -2px; right: -2px;
+        min-width: 16px; height: 16px; padding: 0 4px;
+        border-radius: 50%;
+        background: var(--accent); color: var(--white);
+        font-size: 10px; font-weight: 700; line-height: 1;
+        border: 2px solid var(--bg);
+        display: flex; align-items: center; justify-content: center;
+    }
+    /* Collapsible target bar (D-02 inline / D-03 collapsible): flex-shrink:0 so it
+       never squeezes the .chat area (which keeps flex:1; R4). */
+    .broadcast-bar {
+        flex-shrink: 0;
+        border-bottom: 1px solid var(--divider);
+        background: var(--bg);
+    }
+    .bar-header {
+        display: flex; align-items: center; gap: var(--space-2);
+        padding: var(--space-2) var(--space-3);
+        cursor: pointer;
+    }
+    .bar-header:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+    .bar-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .bar-count { font-size: 12px; color: var(--text-dim); margin-left: auto; }
+    .bar-list {
+        max-height: 40vh; overflow-y: auto;
+        padding: 0 var(--space-3) var(--space-2);
+    }
+    .chevron { color: var(--text-sub); transition: transform 0.15s ease; }
+    .chevron.rotated { transform: rotate(-90deg); }
 
     .placeholder {
         padding: 24px; text-align: center;
