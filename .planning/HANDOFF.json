@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-07-09T06:44:59.538Z",
+  "phase": "01",
+  "phase_name": "broadcast-ui-state — UAT pending, gates milestone v1.0 closeout",
+  "phase_dir": ".planning/phases/01-broadcast-ui-state",
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "paused",
+  "completed_tasks": [
+    {"id": 1, "name": "Phase 2 UAT — 5/5 scenarios (A–E) pass", "status": "done", "commit": "725df74"},
+    {"id": 2, "name": "Fix broadcast Enter-byte blocker (quick 260709-jat)", "status": "done", "commit": "1e137e0"},
+    {"id": 3, "name": "Phase 2 → complete + verified (02-VERIFICATION canonicalized passed)", "status": "done", "commit": "d2cad2a"},
+    {"id": 4, "name": "PROJECT.md evolved + STATE.md updated for phase 2 completion", "status": "done", "commit": "d2cad2a"},
+    {"id": 5, "name": "Milestone v1.0 pre-close audit (audit-open) + readiness check (init.manager)", "status": "done", "commit": null}
+  ],
+  "remaining_tasks": [
+    {"id": 6, "name": "DECISION pending: Phase 1 UAT — (A) run 4 UI scenarios for clean verified closeout / (B) override archive w/ deferred gap / (C) cancel", "status": "in_progress", "progress": "decision presented to user; user paused before choosing"},
+    {"id": 7, "name": "If A: drive Phase 1 UAT scenarios 1,2,3,5 via /gsd-verify-work 1 (test 4 covered by phase 2), then canonicalize 01-VERIFICATION → passed", "status": "not_started"},
+    {"id": 8, "name": "Resume /gsd-complete-milestone v1.0 (pre-close audit + readiness already done; phase 2 verified, phase 1 gated on the decision)", "status": "not_started"},
+    {"id": 9, "name": "Fix broken gsd-tools PATH shim (reinstall @opengsd/gsd-core) — user said 'archive first, then fix'", "status": "not_started"}
+  ],
+  "blockers": [
+    {"description": "Phase 1 UAT never completed — 01-UAT.md status=testing (5 scenarios pending), 01-VERIFICATION.md status=human_needed (untracked). Phase 1 was marked complete in ROADMAP on 2026-07-08 without finishing runtime UI UAT. Blocks verified_closeout of milestone v1.0.", "type": "human_action", "workaround": "Run the 4 pending UI scenarios (decision A) for a clean closeout, or override-archive with the gap recorded (decision B)"},
+    {"description": "Global gsd-tools PATH shim broken — npm shim requires …/node_modules/tiger-flow/gsd-core/bin/gsd-tools.cjs which does not exist; every PATH-based CLI call fails MODULE_NOT_FOUND.", "type": "technical", "workaround": "Call node \"$HOME/.claude/gsd-core/bin/gsd-tools.cjs\" directly; permanent fix: npx -y @opengsd/gsd-core@latest --claude --local"}
+  ],
+  "async_jobs": [],
+  "human_actions_pending": [
+    {"action": "Choose A/B/C for the Phase 1 UAT gate; if A, manually run the 4 Phase-1 GUI UAT scenarios in the desktop app (npm run tauri dev)", "context": "Milestone v1.0 closeout is blocked on Phase 1 verification; user was mid-decision when pausing", "blocking": true}
+  ],
+  "decisions": [
+    {"decision": "Centralize the PTY Enter rule in normalizePtyOutgoing (sendText SSH/local branch) rather than patching the broadcast call site", "rationale": "Single source of truth fixes broadcast + snippet + paste uniformly; call site stays cmd.cmd+\\n and sendText owns EOL translation at the seam", "phase": "02"},
+    {"decision": "Executed quick task 260709-jat inline as orchestrator (planner+executor), not via gsd-executor subagent", "rationale": "Fix was fully diagnosed, trivial, and the broken PATH shim would have broken the executor's commit step", "phase": "02"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "Resume the milestone-closeout decision: re-present A/B/C for the Phase 1 UAT gate. If A, drive Phase-1 UI UAT scenarios 1,2,3,5 (01-UAT.md) like Phase 2, then /gsd-verify-work 1 to close, canonicalize 01-VERIFICATION → passed, then resume /gsd-complete-milestone v1.0. If B, override-archive v1.0 with the Phase 1 UAT gap recorded in MILESTONES.md/STATE.md Deferred Items. After archival, fix the gsd-tools PATH shim.",
+  "context_notes": "Milestone v1.0 (AI Broadcast Mode) is functionally complete; Phase 2 is fully verified (UAT 5/5, verification passed). Phase 1's runtime UI UAT was skipped when it was transitioned to 'complete' on 2026-07-08 — the milestone pre-close audit caught it. Phase 2's UAT already exercised most of the broadcast UI (toggle, target selector), so Phase 1 test 4 (checkbox immediate reflect) is effectively covered; tests 1 (per-tab persistence across close/reopen), 2 (prune on target-tab close), 3 (accent-blue vs danger-red), 5 (EditPane hover popover) remain. All session work committed: 1e137e0, 80cdff7, 725df74, d2cad2a. The gsd-tools CLI works ONLY via direct node call to ~/.claude/gsd-core/bin/gsd-tools.cjs. config mode=yolo, commit_docs=true, use_worktrees=false. No security_enforcement / ui_review hooks active."
+}
