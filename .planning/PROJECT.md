@@ -43,6 +43,18 @@ _None — milestone v1.0 complete. All broadcast requirements shipped in Phases 
 - Session registry（`_sessions`）已维护所有已打开的终端列表及其类型
 - AI 面板绑定 tab 通过 `tabId` prop 传入，当前是一对一关系
 
+## Current State
+
+**Shipped:** v1.0 AI Broadcast Mode — 2 phases, 3 plans, 6 tasks. Git range `9b6f07e..495685c` (28 commits, 32 files, +2888/−843). Tag `v1.0`. Both phases verified (`verification_status: passed`); UAT Phase 1 5/5 + Phase 2 5/5.
+
+**Known interim fix (in-milestone):** broadcast Enter-byte blocker on PowerShell/ConPTY targets — normalized PTY outgoing `\n`→`\r` via `normalizePtyOutgoing` in quick `260709-jat` (commit `1e137e0`, +5 unit tests). Surfaced by Phase 2 UAT, not catchable by structural verification.
+
+**Tech stack unchanged:** Svelte 5 ($state/$derived runes) + Tauri 2. Pure frontend implementation — zero Rust/backend changes (deliberate, per Out of Scope). Reuses existing `broadcastToSessions` primitive.
+
+## Next Milestone Goals
+
+_None decided yet — awaiting `/gsd-new-milestone`. Candidates from v1 deferred requirements (REQUIREMENTS.md v2): broadcast auto-approve suppression, raw-device default-exclude, broadcast toast feedback, cross-session target persistence, disconnect detection, audit logging._
+
 ## Constraints
 
 - **Tech stack**: Svelte 5 + Tauri — 前端状态用 `$state`/`$derived` runes
@@ -78,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-09 after Phase 2 — milestone v1.0 complete*
+*Last updated: 2026-07-09 after v1.0 milestone archive*
