@@ -3,18 +3,18 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 02
-status: complete
-stopped_at: Phase 02 complete — milestone v1.0 100% (ready for /gsd-complete-milestone v1.0)
-last_updated: "2026-07-09T14:30:00.000Z"
+current_phase_name: Broadcast Dispatch & Safety
+status: milestone_ready_to_archive
+stopped_at: Phase 1 UAT gap closed (decision A) — both phases verified, milestone v1.0 ready for /gsd-complete-milestone v1.0
+last_updated: "2026-07-09T15:20:00.000Z"
 last_activity: 2026-07-09
-last_activity_desc: Phase 02 complete — milestone v1.0 100% (UAT 5/5, Enter-byte blocker fixed in quick 260709-jat)
+last_activity_desc: Phase 01 UAT gap closed — decision A executed (UAT 5/5, verification canonicalized passed, phase.complete transition run)
 progress:
   total_phases: 2
   completed_phases: 2
   total_plans: 3
   completed_plans: 3
   percent: 100
-current_phase_name: broadcast-dispatch-safety
 ---
 
 # Project State
@@ -28,10 +28,10 @@ See: .planning/PROJECT.md (updated 2026-07-09)
 
 ## Current Position
 
-Phase: 02 (complete) — last phase of milestone v1.0
-Plan: 02-01 (executed + verified)
-Status: ✓ UAT 5/5 pass (02-UAT.md); verification passed (02-VERIFICATION.md). One blocker surfaced in UAT — broadcast Enter-byte on PowerShell/ConPTY — fixed in quick 260709-jat (commit 1e137e0) and re-verified. Milestone 100%.
-Last activity: 2026-07-09 — Phase 02 complete (milestone v1.0 finished)
+Phase: 02 — Broadcast Dispatch & Safety (final phase, complete)
+Plan: Not started
+Status: ✓ Phase 01 UAT gap closed (5/5 pass, 01-VERIFICATION.md canonicalized `passed`); Phase 02 already verified (UAT 5/5, Enter-byte blocker fixed in quick 260709-jat commit 1e137e0). Both phases verified → milestone v1.0 ready to archive via `/gsd-complete-milestone v1.0`.
+Last activity: 2026-07-09 — Phase 01 UAT gap closed (decision A executed)
 
 Progress: [████████████████████] 3/3 plans (100%)
 
@@ -39,7 +39,7 @@ Progress: [████████████████████] 3/3 pla
 
 **Velocity:**
 
-- Total plans completed: 1
+- Total plans completed: 3
 - Average duration: ~9 min
 - Total execution time: ~0.15 hours
 
@@ -49,6 +49,7 @@ Progress: [████████████████████] 3/3 pla
 |-------|-------|-------|----------|
 | 01-broadcast-ui-state | 1/2 | ~9 min | ~9 min |
 | 02 | 1 | - | - |
+| 01 | 2 | - | - |
 
 **Recent Trend:**
 
@@ -97,6 +98,6 @@ None. Phase 02 UAT 5/5 pass; the one blocker found mid-UAT (broadcast Enter-byte
 
 ## Session Continuity
 
-Last session: 2026-07-09T14:30:00.000Z
-Stopped at: Phase 2 complete — milestone v1.0 100% (all phases shipped + verified, UAT 5/5). Ready for `/gsd-complete-milestone v1.0` to archive.
+Last session: 2026-07-09T15:20:00Z
+Stopped at: Phase 1 UAT gap closed (UAT 5/5, verification canonicalized passed, phase.complete run). Milestone v1.0 100% verified — resume `/gsd-complete-milestone v1.0` to archive.
 Resume file: None
