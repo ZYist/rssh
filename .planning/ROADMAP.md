@@ -12,7 +12,7 @@ AI Broadcast Mode extends RSSH's AI panel so that approved commands fan out to m
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Broadcast UI & State** - Toggle button, target selector, and per-tab state persistence in the AI panel (completed 2026-07-08)
-- [x] **Phase 2: Broadcast Dispatch & Safety** - Post-approval command fan-out to selected targets with parallel execution and output isolation (completed 2026-07-09)
+- [ ] **Phase 2: Broadcast Dispatch & Safety** - Post-approval command fan-out to selected targets with parallel execution and output isolation (plan executed + structurally verified; pending human verification — 02-UAT.md)
 
 ## Phase Details
 
@@ -67,4 +67,4 @@ Phases execute in numeric order: 1 -> 2
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Broadcast UI & State | 2/2 | Complete   | 2026-07-08 |
-| 2. Broadcast Dispatch & Safety | 1/1 | Complete   | 2026-07-09 |
+| 2. Broadcast Dispatch & Safety | 1/1 | Verifying  | — |
