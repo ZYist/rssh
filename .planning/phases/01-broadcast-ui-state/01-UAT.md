@@ -1,9 +1,9 @@
 ---
-status: testing
+status: complete
 phase: 01-broadcast-ui-state
 source: [01-VERIFICATION.md]
 started: 2026-07-08T13:05:00Z
-updated: 2026-07-08T13:05:00Z
+updated: 2026-07-09T15:20:00Z
 ---
 
 # Phase 01: Broadcast UI & State — UAT
@@ -14,12 +14,7 @@ updated: 2026-07-08T13:05:00Z
 
 ## Current Test
 
-number: 1
-name: SC4 per-tab 持久化（互补 T4）
-expected: |
-  开启广播 + 勾选 2 个目标 + 折叠目标条 → 切到另一 AI tab → 切回 → 关闭 AI 面板 → 重新打开 AI 面板。
-  ON 态、2 个目标勾选、折叠态三者全保留（`_broadcastByTab` 是 `store.svelte.ts:78` 模块顶层 `$state`，ChatPanel unmount 不影响它）。
-awaiting: user response
+[testing complete]
 
 ## Tests
 
@@ -32,7 +27,7 @@ awaiting: user response
 **为什么人工：** 模块级 `$state` 跨组件 unmount 的存活是 Svelte 5 运行期契约，grep 只能证伪"状态在模块顶层、非组件本地"，无法证明重挂载时确实读到同一份模块状态。仓库内无 broadcast store 单测覆盖 close-reopen 路径。
 
 expected: ON 态、2 个目标、折叠态三者全保留
-result: [pending]
+result: pass
 
 ### 2. D-11 prune（互补 T7）
 
@@ -45,7 +40,7 @@ result: [pending]
 **互补测试（主标签路径）：** 另开一个主标签开启广播 → 关闭该主标签 → 重开同位置 → 确认 `_broadcastByTab[tab_id]` 无残留（`stopSession` 第 364 行 `delete`）。
 
 expected: 目标 tab 关闭后徽标 N 递减、A 剔除；主标签关闭后无残留
-result: [pending]
+result: pass
 
 ### 3. D-08 视觉（accent 非红）
 
@@ -56,7 +51,7 @@ result: [pending]
 **为什么人工：** CSS token 已 grep 确认（无 `--error` 出现在任何 `.broadcast-` 规则，`ChatPanel.svelte:564-571` 用 `var(--accent)`），但像素级着色需人眼确认。
 
 expected: 广播开关 accent 蓝，DangerModeToggle 红，两者分明
-result: [pending]
+result: pass
 
 ### 4. BCAST-02/03 功能冒烟（勾选即时反映）
 
@@ -67,7 +62,8 @@ result: [pending]
 **为什么人工：** Svelte 5 Set 反应性（重建 Set + 整体替换 record）由代码 grep 证明，但 UI 实时刷新需运行期确认。
 
 expected: 勾选/取消即时反映 halo + 徽标计数
-result: [pending]
+result: skipped
+reason: 勾选即时反映（halo + 徽标）已在 Phase 2 UAT 场景 B/D 中端到端验证（广播开启 + 勾选 SSH/serial 目标 → Approve/审批 dialog 出现，halo 与徽标实时反映）。Phase 1 决策 A 的执行计划明确 test 4 由 Phase 2 覆盖，按用户选择跳过。
 
 ### 5. EditPane hover 预览回归（01-01 D3 遗留）
 
@@ -78,15 +74,15 @@ result: [pending]
 **为什么人工：** popover 锚点坐标是运行期 DOM 行为，自动化编译/类型/单测无法证伪。
 
 expected: SessionPreviewPopover 弹出位置与改造前一致
-result: [pending]
+result: pass
 
 ## Summary
 
 total: 5
-passed: 0
+passed: 4
 issues: 0
-pending: 5
-skipped: 0
+pending: 0
+skipped: 1
 blocked: 0
 
 ## Gaps
