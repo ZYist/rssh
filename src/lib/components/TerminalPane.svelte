@@ -26,7 +26,7 @@
     import {setupXtermIme229Workaround} from "../terminal/xterm-ime-229-workaround.ts";
     import {createReservedSessionAttempt} from "../terminal/reserved-session-attempt.ts";
     import {renderBlocksToBlob} from "../terminal/block-to-image.ts";
-    import {inputNewline, normalizeIncoming, bytesToHex, parseHexInput, parseLoginScript, remapEditingKeys, normalizeOutgoing, type LoginStep} from "../terminal/serial-transforms.ts";
+    import {inputNewline, normalizeIncoming, bytesToHex, parseHexInput, parseLoginScript, remapEditingKeys, normalizeOutgoing, normalizePtyOutgoing, type LoginStep} from "../terminal/serial-transforms.ts";
     import {compileHighlightRules, type CompiledHighlightRule} from "../terminal/highlight.ts";
     import {HighlightDecorator} from "../terminal/highlight-decorations.ts";
     import {t, errMsg} from "../i18n/index.svelte.ts";
@@ -767,9 +767,11 @@
 
     /** Inject user text as input (snippet / broadcast, and the serial/telnet
      *  paste path). Stream transports: convert every line break to the device's
-     *  configured EOL and honor slow-send. ssh/local: write raw — the PTY owns
-     *  its own line discipline. Control sequences (arrows / Esc / Tab) must NOT
-     *  come through here — they go raw via the registered terminal writer. */
+     *  configured EOL and honor slow-send. ssh/local: collapse line breaks to CR
+     *  — ConPTY/PowerShell only accept \r as Enter (a raw \n sits at the prompt
+     *  unexecuted, 02-UAT test 2) and the cooked PTY's ICRNL maps \r→\n.
+     *  Control sequences (arrows / Esc / Tab) must NOT come through here — they
+     *  go raw via the registered terminal writer. */
     function sendText(text: string) {
         if (!text || disconnected || !sessionId) return;
         if (streamOpts) {
@@ -778,7 +780,8 @@
             streamSendText(normalized);
             return;
         }
-        void invoke(writeCmd, { sessionId, data: Array.from(new TextEncoder().encode(text)) })
+        const normalized = normalizePtyOutgoing(text);
+        void invoke(writeCmd, { sessionId, data: Array.from(new TextEncoder().encode(normalized)) })
             .catch((e) => console.warn("[broadcast] sendText 写入失败:", e));
     }
 
@@ -787,10 +790,11 @@
         // Serial/telnet have no bracketed paste and speak the device's EOL —
         // that's exactly sendText's job (newline transform + slow-send).
         if (streamOpts) { sendText(text); return; }
-        // Collapse every line break to a single CR before sending: the PTY's
-        // ICRNL turns each CR into one \n, so a raw CRLF would double (#98).
-        // (xterm's prepareTextForTerminal does this; we bypass terminal.paste().)
-        const normalized = text.replace(/\r?\n/g, "\r");
+        // Collapse every line break to a single CR before sending (same rule as
+        // sendText above): the PTY's ICRNL turns each CR into one \n, so a raw
+        // CRLF would double (#98). (xterm's prepareTextForTerminal does this; we
+        // bypass terminal.paste().)
+        const normalized = normalizePtyOutgoing(text);
         const wrapped = terminal.modes.bracketedPasteMode
             ? `\x1b[200~${normalized}\x1b[201~` : normalized;
         invoke(writeCmd, { sessionId, data: Array.from(new TextEncoder().encode(wrapped)) });

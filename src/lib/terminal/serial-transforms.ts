@@ -108,3 +108,18 @@ export function remapEditingKeys(data: string, mode: string): string {
 export function normalizeOutgoing(text: string, mode: string): string {
   return text.replace(/\r\n|\r|\n/g, inputNewline(mode));
 }
+
+/**
+ * Collapse every line break to a single CR for writing to a cooked PTY (SSH /
+ * local). The PTY's ICRNL turns each CR into LF on input, and ConPTY/PowerShell
+ * only accept CR as Enter — a raw LF sits at the prompt unexecuted, which is why
+ * broadcast/snippet text ending in "\n" never submitted on PowerShell targets
+ * (02-UAT test 2). Multi-line text becomes one CR per line so each line submits
+ * independently. CRLF collapses to a single CR (no doubling — a raw CRLF would
+ * produce two Enters once ICRNL maps the CR). Mirrors the byte xterm.js sends
+ * when the user presses Enter themselves. Stream devices (serial/telnet) use
+ * normalizeOutgoing() with their per-profile EOL instead.
+ */
+export function normalizePtyOutgoing(text: string): string {
+  return text.replace(/\r?\n/g, "\r");
+}
