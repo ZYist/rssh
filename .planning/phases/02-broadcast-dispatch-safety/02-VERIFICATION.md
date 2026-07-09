@@ -1,7 +1,7 @@
 ---
 phase: 02-broadcast-dispatch-safety
-verified: 2026-07-09T10:15:00Z
-status: human_needed
+verified: 2026-07-09T14:20:00Z
+status: passed
 score: 9/9 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
@@ -27,9 +27,9 @@ human_verification:
 # Phase 2: Broadcast Dispatch & Safety 验证报告
 
 **Phase Goal:** Approved AI commands automatically broadcast to all selected targets in parallel while the AI reads only the primary tab's output
-**Verified:** 2026-07-09T10:15:00Z
-**Status:** human_needed
-**Re-verification:** No — initial verification
+**Verified:** 2026-07-09T14:20:00Z
+**Status:** passed (human UAT complete 2026-07-09 — 5/5 scenarios pass)
+**Re-verification:** Human UAT completed after the initial structural pass. All 5 GUI scenarios (A–E) passed in `02-UAT.md`. **Value of the human pass:** scenario B surfaced a runtime Enter-byte bug the structural verification could not catch — PowerShell/ConPTY broadcast targets received `\n` instead of `\r` and never auto-executed (sendText SSH/local branch wrote raw). Fixed in quick `260709-jat` (commit `1e137e0`, +5 unit tests) and re-verified pass. The 9/9 must-have structural truths remain accurate; BCAST-05/06 now hold at runtime too.
 
 ## Goal Achievement
 

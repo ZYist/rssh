@@ -16,14 +16,18 @@ AI 对一台机器做诊断/操作，操作指令自动同步到其它同类机�
 - ✓ AI 面板单终端命令执行 — existing（`CommandConfirmDialog` → `executeCommand`）
 - ✓ Session registry — existing（`_sessions` 列表、`registerSession`/`unregisterSession`）
 
+### Validated this milestone (Phases 1–2)
+
+- ✓ AI 面板广播模式开关 UI（toggle button in ChatPanel）— Phase 1
+- ✓ 广播目标选择器（勾选哪些标签参与广播）— Phase 1
+- ✓ 广播状态持久化（tab 级别，切换 tab 后模式保持）— Phase 1
+- ✓ 命令执行时广播分发逻辑（Approve 后同时发给勾选标签）— Phase 2
+- ✓ 审批流程跟随现有 danger_mode / auto_run_command 设置 — Phase 2
+- ✓ 输出收集：AI 只读当前标签输出，其它标签静默执行 — Phase 2
+
 ### Active
 
-- [ ] AI 面板广播模式开关 UI（toggle button in ChatPanel）
-- [ ] 广播目标选择器（勾选哪些标签参与广播）
-- [ ] 命令执行时广播分发逻辑（Approve 后同时发给勾选标签）
-- [ ] 审批流程跟随现有 danger_mode / auto_run_command 设置
-- [ ] 输出收集：AI 只读当前标签输出，其它标签静默执行
-- [ ] 广播状态持久化（tab 级别，切换 tab 后模式保持）
+_None — milestone v1.0 complete. All broadcast requirements shipped in Phases 1–2._
 
 ### Out of Scope
 
@@ -50,10 +54,11 @@ AI 对一台机器做诊断/操作，操作指令自动同步到其它同类机�
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| AI 只读当前标签输出 | 多终端输出汇总会爆 AI 上下文，且用户本意是同步操作，一台代表全部 | — Pending |
-| 复用 broadcastToSessions 通道 | 已有基础设施，pane 的 sendText 已处理各 transport 的 EOL/slow-send | — Pending |
-| 审批跟随现有 danger_mode 设置 | 一致的用户心智模型，不引入额外开关 | — Pending |
-| 广播目标用户可勾选 | 比"全部"更安全、更灵活 | — Pending |
+| AI 只读当前标签输出 | 多终端输出汇总会爆 AI 上下文，且用户本意是同步操作，一台代表全部 | ✓ Shipped — Phase 2 (BCAST-07) |
+| 复用 broadcastToSessions 通道 | 已有基础设施，pane 的 sendText 已处理各 transport 的 EOL/slow-send | ✓ Shipped — Phase 1+2 |
+| 审批跟随现有 danger_mode 设置 | 一致的用户心智模型，不引入额外开关 | ✓ Shipped — Phase 2 |
+| 广播目标用户可勾选 | 比"全部"更安全、更灵活 | ✓ Shipped — Phase 1 |
+| PTY 写入统一用 `\r` 作回车（`normalizePtyOutgoing`） | ConPTY/PowerShell 只接受 `\r`；Unix PTY 经 ICRNL 转 `\n`。广播/snippet/paste 共用同一归一化，避免 LF 不提交 | ✓ Shipped — Phase 2 (quick 260709-jat，UAT 发现并修复) |
 
 ## Evolution
 
@@ -73,4 +78,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-08 after initialization*
+*Last updated: 2026-07-09 after Phase 2 — milestone v1.0 complete*
