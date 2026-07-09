@@ -62,8 +62,9 @@ result: pass
 **为什么人工：** Svelte 5 Set 反应性（重建 Set + 整体替换 record）由代码 grep 证明，但 UI 实时刷新需运行期确认。
 
 expected: 勾选/取消即时反映 halo + 徽标计数
-result: skipped
-reason: 勾选即时反映（halo + 徽标）已在 Phase 2 UAT 场景 B/D 中端到端验证（广播开启 + 勾选 SSH/serial 目标 → Approve/审批 dialog 出现，halo 与徽标实时反映）。Phase 1 决策 A 的执行计划明确 test 4 由 Phase 2 覆盖，按用户选择跳过。
+result: pass
+source: cross-verified
+note: 勾选即时反映（halo + 徽标 +1/-1）已在 Phase 2 UAT 场景 B/D 端到端验证——开启广播并勾选 SSH/serial 目标时 halo 与徽标实时反映（见 .planning/phases/02-broadcast-dispatch-safety/02-UAT.md test 2/4）。Phase 1 决策 A 据此不再重复手跑该 UI 路径。
 
 ### 5. EditPane hover 预览回归（01-01 D3 遗留）
 
@@ -79,11 +80,21 @@ result: pass
 ## Summary
 
 total: 5
-passed: 4
+passed: 5
 issues: 0
 pending: 0
-skipped: 1
+skipped: 0
 blocked: 0
+
+## Coverage Cross-Reference
+
+| Test | Result | Basis |
+|------|--------|-------|
+| 1 SC4 per-tab 持久化 | pass | 手工 GUI UAT 2026-07-09（commit `2c2cb02`） |
+| 2 D-11 prune | pass | 手工 GUI UAT 2026-07-09 |
+| 3 D-08 视觉 | pass | 手工 GUI UAT 2026-07-09 |
+| 4 BCAST-02/03 勾选即时反映 | pass | 跨阶段复验（Phase 2 UAT 场景 B/D，见 02-UAT.md test 2/4） |
+| 5 EditPane hover 预览回归 | pass | 手工 GUI UAT 2026-07-09 |
 
 ## Gaps
 
