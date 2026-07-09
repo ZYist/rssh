@@ -1,795 +1,266 @@
 {
-  "_meta": {
-    "updated_at": "2026-07-08T03:00:48.391Z",
-    "version": 2
-  },
+  "_meta": { "updated_at": "2026-07-09T02:33:00.000Z", "version": 3 },
   "entries": {
     "src-tauri/src/main.rs": {
-      "exports": [
-        "main"
-      ],
-      "imports": [
-        "rssh_lib::run"
-      ],
+      "exports": ["main"],
+      "imports": ["rssh_lib::run"],
       "type": "entry-point"
     },
     "src-tauri/src/lib.rs": {
-      "exports": [
-        "run",
-        "crypto",
-        "db",
-        "emitter",
-        "error",
-        "migration",
-        "models",
-        "secret",
-        "bastion",
-        "server",
-        "sync"
-      ],
-      "imports": [
-        "ai",
-        "commands",
-        "ssh",
-        "state",
-        "terminal",
-        "tauri",
-        "tauri_plugin_opener",
-        "tauri_plugin_dialog",
-        "tauri_plugin_fs",
-        "env_logger"
-      ],
+      "exports": ["run", "crypto", "db", "emitter", "error", "migration", "models", "secret", "bastion", "server", "sync"],
+      "imports": ["ai", "commands", "ssh", "state", "terminal", "tauri", "tauri_plugin_opener", "tauri_plugin_dialog", "tauri_plugin_fs", "env_logger"],
       "type": "module"
     },
     "src-tauri/src/server_main.rs": {
-      "exports": [
-        "main"
-      ],
-      "imports": [
-        "rssh_lib::server"
-      ],
+      "exports": ["main"],
+      "imports": ["rssh_lib::server"],
       "type": "entry-point"
     },
     "src-tauri/src/bin/rssh/main.rs": {
-      "exports": [
-        "main"
-      ],
-      "imports": [
-        "clap",
-        "commands",
-        "ctx",
-        "helpers"
-      ],
+      "exports": ["main"],
+      "imports": ["clap", "commands", "ctx", "helpers"],
       "type": "entry-point"
     },
     "src-tauri/src/state.rs": {
-      "exports": [
-        "AppState"
-      ],
-      "imports": [
-        "db::Db",
-        "secret::SecretStore",
-        "ssh::client::SessionHandle",
-        "ssh::forward::ForwardHandle",
-        "ssh::sftp::SftpHandle",
-        "terminal::pty::PtyHandle",
-        "terminal::serial::SerialHandle",
-        "terminal::telnet::TelnetHandle",
-        "ai::session::DiagnoseSession"
-      ],
+      "exports": ["AppState"],
+      "imports": ["db::Db", "secret::SecretStore", "ssh::client::SessionHandle", "ssh::forward::ForwardHandle", "ssh::sftp::SftpHandle", "terminal::pty::PtyHandle", "terminal::serial::SerialHandle", "terminal::telnet::TelnetHandle", "ai::session::DiagnoseSession"],
       "type": "module"
     },
     "src-tauri/src/models.rs": {
-      "exports": [
-        "validate_name",
-        "Profile",
-        "CredentialType",
-        "Credential",
-        "ForwardType",
-        "Forward",
-        "SerialProfile",
-        "TelnetProfile",
-        "Group",
-        "HighlightRule",
-        "Snippet",
-        "CastHeader"
-      ],
-      "imports": [
-        "serde",
-        "error::AppError"
-      ],
+      "exports": ["validate_name", "Profile", "CredentialType", "Credential", "ForwardType", "Forward", "SerialProfile", "TelnetProfile", "Group", "HighlightRule", "Snippet", "CastHeader"],
+      "imports": ["serde", "error::AppError"],
       "type": "module"
     },
     "src-tauri/src/error.rs": {
-      "exports": [
-        "CodedMsg",
-        "AppError",
-        "AppResult",
-        "locked"
-      ],
-      "imports": [
-        "serde",
-        "thiserror",
-        "rusqlite"
-      ],
+      "exports": ["CodedMsg", "AppError", "AppResult", "locked"],
+      "imports": ["serde", "thiserror", "rusqlite"],
       "type": "module"
     },
     "src-tauri/src/db/mod.rs": {
-      "exports": [
-        "Db",
-        "data_dir"
-      ],
-      "imports": [
-        "rusqlite",
-        "error",
-        "schema"
-      ],
+      "exports": ["Db", "data_dir"],
+      "imports": ["rusqlite", "error", "schema"],
       "type": "module"
     },
     "src-tauri/src/db/schema.rs": {
-      "exports": [
-        "migrate"
-      ],
-      "imports": [
-        "rusqlite::Connection"
-      ],
+      "exports": ["migrate"],
+      "imports": ["rusqlite::Connection"],
       "type": "module"
     },
     "src-tauri/src/commands/mod.rs": {
-      "exports": [
-        "cli",
-        "external",
-        "forward",
-        "group",
-        "lifecycle",
-        "profile",
-        "pty",
-        "serial",
-        "session",
-        "settings",
-        "sftp",
-        "sync",
-        "telnet",
-        "update",
-        "window"
-      ],
+      "exports": ["cli", "external", "forward", "group", "lifecycle", "profile", "pty", "serial", "session", "settings", "sftp", "sync", "telnet", "update", "window"],
       "imports": [],
       "type": "module"
     },
     "src-tauri/src/commands/profile.rs": {
-      "exports": [
-        "list_profiles",
-        "get_profile",
-        "create_profile",
-        "update_profile",
-        "delete_profile",
-        "list_credentials",
-        "get_credential",
-        "create_credential",
-        "update_credential",
-        "delete_credential",
-        "import_ssh_config",
-        "read_ssh_config_default",
-        "read_default_key_file",
-        "import_ssh_entries"
-      ],
-      "imports": [
-        "tauri::command",
-        "db::profile",
-        "models::Profile"
-      ],
+      "exports": ["list_profiles", "get_profile", "create_profile", "update_profile", "delete_profile", "list_credentials", "get_credential", "create_credential", "update_credential", "delete_credential", "import_ssh_config", "read_ssh_config_default", "read_default_key_file", "import_ssh_entries"],
+      "imports": ["tauri::command", "db::profile", "models::Profile"],
       "type": "module"
     },
     "src-tauri/src/commands/session.rs": {
-      "exports": [
-        "ssh_connect",
-        "ssh_write",
-        "ssh_resize",
-        "ssh_disconnect",
-        "ssh_auth_respond",
-        "ssh_auth_cancel",
-        "ssh_passphrase_respond",
-        "ssh_passphrase_cancel",
-        "ssh_host_key_respond",
-        "ssh_host_key_cancel"
-      ],
-      "imports": [
-        "tauri::command",
-        "state::AppState",
-        "ssh::client"
-      ],
+      "exports": ["ssh_connect", "ssh_write", "ssh_resize", "ssh_disconnect", "ssh_auth_respond", "ssh_auth_cancel", "ssh_passphrase_respond", "ssh_passphrase_cancel", "ssh_host_key_respond", "ssh_host_key_cancel"],
+      "imports": ["tauri::command", "state::AppState", "ssh::client"],
       "type": "module"
     },
     "src-tauri/src/commands/sftp.rs": {
-      "exports": [
-        "sftp_connect",
-        "sftp_connect_session",
-        "sftp_home",
-        "sftp_list",
-        "sftp_walk_remote_dir",
-        "walk_local_dir",
-        "sftp_download",
-        "sftp_upload",
-        "sftp_mkdir",
-        "sftp_close",
-        "sftp_download_to",
-        "sftp_upload_from",
-        "sftp_save_file",
-        "sftp_pick_and_upload",
-        "sftp_pick_save_path",
-        "sftp_pick_open_path",
-        "sftp_pick_folder",
-        "sftp_pick_open_files",
-        "sftp_cancel_transfer",
-        "sftp_remove",
-        "sftp_rename",
-        "sftp_stat"
-      ],
-      "imports": [
-        "tauri::command",
-        "ssh::sftp",
-        "state::AppState"
-      ],
+      "exports": ["sftp_connect", "sftp_connect_session", "sftp_home", "sftp_list", "sftp_walk_remote_dir", "walk_local_dir", "sftp_download", "sftp_upload", "sftp_mkdir", "sftp_close", "sftp_download_to", "sftp_upload_from", "sftp_save_file", "sftp_pick_and_upload", "sftp_pick_save_path", "sftp_pick_open_path", "sftp_pick_folder", "sftp_pick_open_files", "sftp_cancel_transfer", "sftp_remove", "sftp_rename", "sftp_stat"],
+      "imports": ["tauri::command", "ssh::sftp", "state::AppState"],
       "type": "module"
     },
     "src-tauri/src/commands/pty.rs": {
-      "exports": [
-        "list_shells",
-        "refresh_shells",
-        "pty_spawn",
-        "pty_write",
-        "pty_resize",
-        "pty_close"
-      ],
-      "imports": [
-        "tauri::command",
-        "terminal::pty"
-      ],
+      "exports": ["list_shells", "refresh_shells", "pty_spawn", "pty_write", "pty_resize", "pty_close"],
+      "imports": ["tauri::command", "terminal::pty"],
       "type": "module"
     },
     "src-tauri/src/commands/serial.rs": {
-      "exports": [
-        "serial_list_ports",
-        "serial_open",
-        "serial_write",
-        "serial_close",
-        "serial_set_dtr",
-        "serial_set_rts",
-        "serial_send_break",
-        "list_serial_profiles",
-        "get_serial_profile",
-        "create_serial_profile",
-        "update_serial_profile",
-        "delete_serial_profile"
-      ],
-      "imports": [
-        "tauri::command",
-        "terminal::serial"
-      ],
+      "exports": ["serial_list_ports", "serial_open", "serial_write", "serial_close", "serial_set_dtr", "serial_set_rts", "serial_send_break", "list_serial_profiles", "get_serial_profile", "create_serial_profile", "update_serial_profile", "delete_serial_profile"],
+      "imports": ["tauri::command", "terminal::serial"],
       "type": "module"
     },
     "src-tauri/src/commands/telnet.rs": {
-      "exports": [
-        "telnet_open",
-        "telnet_write",
-        "telnet_resize",
-        "telnet_close",
-        "list_telnet_profiles",
-        "get_telnet_profile",
-        "create_telnet_profile",
-        "update_telnet_profile",
-        "delete_telnet_profile"
-      ],
-      "imports": [
-        "tauri::command",
-        "terminal::telnet"
-      ],
+      "exports": ["telnet_open", "telnet_write", "telnet_resize", "telnet_close", "list_telnet_profiles", "get_telnet_profile", "create_telnet_profile", "update_telnet_profile", "delete_telnet_profile"],
+      "imports": ["tauri::command", "terminal::telnet"],
       "type": "module"
     },
     "src-tauri/src/commands/forward.rs": {
-      "exports": [
-        "list_forwards",
-        "get_forward",
-        "create_forward",
-        "update_forward",
-        "delete_forward",
-        "forward_start",
-        "forward_stats",
-        "forward_stop"
-      ],
-      "imports": [
-        "tauri::command",
-        "ssh::forward"
-      ],
+      "exports": ["list_forwards", "get_forward", "create_forward", "update_forward", "delete_forward", "forward_start", "forward_stats", "forward_stop"],
+      "imports": ["tauri::command", "ssh::forward"],
       "type": "module"
     },
     "src-tauri/src/commands/sync.rs": {
-      "exports": [
-        "export_config",
-        "import_config",
-        "github_push",
-        "github_pull",
-        "webdav_push",
-        "webdav_pull"
-      ],
-      "imports": [
-        "tauri::command",
-        "sync::config"
-      ],
+      "exports": ["export_config", "import_config", "github_push", "github_pull", "webdav_push", "webdav_pull"],
+      "imports": ["tauri::command", "sync::config"],
       "type": "module"
     },
     "src-tauri/src/commands/settings.rs": {
-      "exports": [
-        "get_setting",
-        "set_setting",
-        "list_highlights",
-        "add_highlight",
-        "remove_highlight",
-        "update_highlight",
-        "load_snippets",
-        "save_snippets",
-        "reset_highlights",
-        "list_recordings",
-        "read_recording",
-        "secret_backend",
-        "list_fonts"
-      ],
-      "imports": [
-        "tauri::command",
-        "db::settings",
-        "db::highlight"
-      ],
+      "exports": ["get_setting", "set_setting", "list_highlights", "add_highlight", "remove_highlight", "update_highlight", "load_snippets", "save_snippets", "reset_highlights", "list_recordings", "read_recording", "secret_backend", "list_fonts"],
+      "imports": ["tauri::command", "db::settings", "db::highlight"],
       "type": "module"
     },
     "src-tauri/src/commands/window.rs": {
-      "exports": [
-        "open_tab_in_new_window",
-        "clipboard_read",
-        "clipboard_write",
-        "WindowGroups"
-      ],
-      "imports": [
-        "tauri::command",
-        "arboard"
-      ],
+      "exports": ["open_tab_in_new_window", "clipboard_read", "clipboard_write", "WindowGroups"],
+      "imports": ["tauri::command", "arboard"],
       "type": "module"
     },
     "src-tauri/src/ssh/mod.rs": {
-      "exports": [
-        "auth",
-        "bastion",
-        "client",
-        "config",
-        "forward",
-        "known_hosts",
-        "prompt",
-        "sftp"
-      ],
+      "exports": ["auth", "bastion", "client", "config", "forward", "known_hosts", "prompt", "sftp"],
       "imports": [],
       "type": "module"
     },
     "src-tauri/src/ssh/client.rs": {
-      "exports": [
-        "SessionHandle"
-      ],
-      "imports": [
-        "russh",
-        "tokio",
-        "async_trait",
-        "ssh::auth",
-        "ssh::known_hosts"
-      ],
+      "exports": ["SessionHandle"],
+      "imports": ["russh", "tokio", "async_trait", "ssh::auth", "ssh::known_hosts"],
       "type": "module"
     },
     "src-tauri/src/ssh/sftp.rs": {
-      "exports": [
-        "SftpHandle"
-      ],
-      "imports": [
-        "russh_sftp",
-        "tokio"
-      ],
+      "exports": ["SftpHandle"],
+      "imports": ["russh_sftp", "tokio"],
       "type": "module"
     },
     "src-tauri/src/terminal/mod.rs": {
-      "exports": [
-        "pty",
-        "recorder",
-        "serial",
-        "telnet"
-      ],
+      "exports": ["pty", "recorder", "serial", "telnet"],
       "imports": [],
       "type": "module"
     },
     "src-tauri/src/terminal/pty.rs": {
-      "exports": [
-        "PtyHandle",
-        "PtyOut",
-        "PtySink",
-        "init_available_shells"
-      ],
-      "imports": [
-        "portable_pty"
-      ],
+      "exports": ["PtyHandle", "PtyOut", "PtySink", "init_available_shells"],
+      "imports": ["portable_pty"],
       "type": "module"
     },
     "src-tauri/src/terminal/serial.rs": {
-      "exports": [
-        "SerialHandle",
-        "SerialOut",
-        "SerialSink",
-        "open"
-      ],
-      "imports": [
-        "serialport"
-      ],
+      "exports": ["SerialHandle", "SerialOut", "SerialSink", "open"],
+      "imports": ["serialport"],
       "type": "module"
     },
     "src-tauri/src/terminal/telnet.rs": {
-      "exports": [
-        "TelnetHandle",
-        "TelnetOut",
-        "TelnetSink",
-        "open"
-      ],
-      "imports": [
-        "tokio::net"
-      ],
+      "exports": ["TelnetHandle", "TelnetOut", "TelnetSink", "open"],
+      "imports": ["tokio::net"],
       "type": "module"
     },
     "src-tauri/src/terminal/recorder.rs": {
-      "exports": [
-        "recording"
-      ],
-      "imports": [
-        "models::CastHeader"
-      ],
+      "exports": ["recording"],
+      "imports": ["models::CastHeader"],
       "type": "module"
     },
     "src-tauri/src/ai/mod.rs": {
-      "exports": [
-        "audit",
-        "command_blacklist",
-        "commands",
-        "llm",
-        "prompts",
-        "redact_rules",
-        "sanitize",
-        "session",
-        "shell",
-        "skills",
-        "tools"
-      ],
+      "exports": ["audit", "command_blacklist", "commands", "llm", "prompts", "redact_rules", "sanitize", "session", "shell", "skills", "tools"],
       "imports": [],
       "type": "module"
     },
     "src-tauri/src/ai/session.rs": {
-      "exports": [
-        "start",
-        "DiagnoseSession",
-        "SessionConfig",
-        "UserAction",
-        "PendingSession"
-      ],
-      "imports": [
-        "ai::llm",
-        "ai::tools",
-        "ai::sanitize",
-        "emitter::Host"
-      ],
+      "exports": ["start", "DiagnoseSession", "SessionConfig", "UserAction", "PendingSession"],
+      "imports": ["ai::llm", "ai::tools", "ai::sanitize", "emitter::Host"],
       "type": "module"
     },
     "src-tauri/src/ai/commands.rs": {
-      "exports": [
-        "ai_list_skills",
-        "ai_get_skill",
-        "ai_save_skill",
-        "ai_delete_skill",
-        "ai_session_start",
-        "ai_session_stop",
-        "ai_user_message",
-        "ai_command_result",
-        "ai_command_reject",
-        "ai_cancel_stream",
-        "ai_settings_get",
-        "ai_settings_set",
-        "ai_list_models"
-      ],
-      "imports": [
-        "tauri::command",
-        "ai::session",
-        "ai::llm"
-      ],
+      "exports": ["ai_list_skills", "ai_get_skill", "ai_save_skill", "ai_delete_skill", "ai_session_start", "ai_session_stop", "ai_user_message", "ai_command_result", "ai_command_reject", "ai_cancel_stream", "ai_settings_get", "ai_settings_set", "ai_list_models"],
+      "imports": ["tauri::command", "ai::session", "ai::llm"],
       "type": "module"
     },
     "src-tauri/src/ai/llm/mod.rs": {
-      "exports": [
-        "llm"
-      ],
-      "imports": [
-        "ai::llm::anthropic",
-        "ai::llm::openai",
-        "ai::llm::deepseek",
-        "ai::llm::glm",
-        "ai::llm::protocol"
-      ],
+      "exports": ["llm"],
+      "imports": ["ai::llm::anthropic", "ai::llm::openai", "ai::llm::deepseek", "ai::llm::glm", "ai::llm::protocol"],
       "type": "module"
     },
     "src-tauri/src/secret/mod.rs": {
-      "exports": [
-        "open",
-        "SecretStore",
-        "setting_key"
-      ],
-      "imports": [
-        "secret::hybrid_store",
-        "secret::keyring_store",
-        "secret::master_key"
-      ],
-      "type": "module"
-    },
-    "src-tauri/src/secret/hybrid_store.rs": {
-      "exports": [
-        "HybridStore"
-      ],
-      "imports": [
-        "chacha20poly1305",
-        "argon2",
-        "secret::crypto",
-        "db::secret"
-      ],
+      "exports": ["open", "SecretStore", "setting_key"],
+      "imports": ["secret::hybrid_store", "secret::keyring_store", "secret::master_key"],
       "type": "module"
     },
     "src-tauri/src/sync/mod.rs": {
-      "exports": [
-        "config",
-        "github",
-        "webdav"
-      ],
+      "exports": ["config", "github", "webdav"],
       "imports": [],
       "type": "module"
     },
     "src-tauri/src/server.rs": {
-      "exports": [
-        "build_state",
-        "serve"
-      ],
-      "imports": [
-        "tokio_tungstenite",
-        "include_dir",
-        "futures_util",
-        "state::AppState"
-      ],
+      "exports": ["build_state", "serve"],
+      "imports": ["tokio_tungstenite", "include_dir", "futures_util", "state::AppState"],
       "type": "module"
     },
     "src-tauri/src/emitter.rs": {
-      "exports": [
-        "Host"
-      ],
-      "imports": [
-        "tauri::AppHandle"
-      ],
+      "exports": ["Host"],
+      "imports": ["tauri::AppHandle"],
       "type": "module"
     },
     "src-tauri/src/migration/mod.rs": {
-      "exports": [
-        "run_migrations"
-      ],
-      "imports": [
-        "db::Db",
-        "secret::SecretStore"
-      ],
+      "exports": ["run_migrations"],
+      "imports": ["db::Db", "secret::SecretStore"],
       "type": "module"
     },
-    "src-tauri/tauri.conf.json": {
-      "exports": [],
-      "imports": [],
-      "type": "config"
-    },
-    "src-tauri/Cargo.toml": {
-      "exports": [],
-      "imports": [],
-      "type": "config"
-    },
-    "src-tauri/capabilities/default.json": {
-      "exports": [],
-      "imports": [],
-      "type": "config"
-    },
+    "src-tauri/tauri.conf.json": { "exports": [], "imports": [], "type": "config" },
+    "src-tauri/Cargo.toml": { "exports": [], "imports": [], "type": "config" },
+    "src-tauri/capabilities/default.json": { "exports": [], "imports": [], "type": "config" },
     "src/main.ts": {
-      "exports": [
-        "default"
-      ],
-      "imports": [
-        "./lib/ipc-boot.ts",
-        "./App.svelte",
-        "svelte",
-        "./lib/themes/store.svelte.ts",
-        "./lib/stores/transfers.svelte.ts",
-        "./lib/stores/app.svelte.ts",
-        "./lib/local-drop.ts"
-      ],
+      "exports": ["default"],
+      "imports": ["./lib/ipc-boot.ts", "./App.svelte", "svelte", "./lib/themes/store.svelte.ts", "./lib/stores/transfers.svelte.ts", "./lib/stores/app.svelte.ts", "./lib/local-drop.ts"],
       "type": "entry-point"
     },
     "src/App.svelte": {
-      "exports": [
-        "default"
-      ],
-      "imports": [
-        "./lib/components/AppShell.svelte",
-        "./lib/components/ToastStack.svelte",
-        "./lib/components/WelcomeScreen.svelte",
-        "./lib/stores/app.svelte.ts",
-        "./lib/stores/updates.svelte.ts",
-        "./lib/ai/store.svelte.ts"
-      ],
+      "exports": ["default"],
+      "imports": ["./lib/components/AppShell.svelte", "./lib/components/ToastStack.svelte", "./lib/components/WelcomeScreen.svelte", "./lib/stores/app.svelte.ts", "./lib/stores/updates.svelte.ts", "./lib/ai/store.svelte.ts"],
       "type": "entry-point"
     },
-    "src/lib/ipc-shim.ts": {
-      "exports": [
-        "installTauriShim"
-      ],
-      "imports": [],
-      "type": "module"
-    },
-    "src/lib/ipc-boot.ts": {
-      "exports": [],
-      "imports": [
-        "./ipc-shim.ts"
-      ],
-      "type": "module"
-    },
+    "src/lib/ipc-shim.ts": { "exports": ["installTauriShim"], "imports": [], "type": "module" },
+    "src/lib/ipc-boot.ts": { "exports": [], "imports": ["./ipc-shim.ts"], "type": "module" },
     "src/lib/stores/app.svelte.ts": {
-      "exports": [
-        "isMobile",
-        "TabType",
-        "TerminalTabType",
-        "isTerminalTabType",
-        "Tab",
-        "SettingsPage",
-        "Group",
-        "Profile",
-        "Credential",
-        "Forward",
-        "tabs",
-        "activeTabId",
-        "activeTab",
-        "loadProfiles",
-        "loadForwards"
-      ],
-      "imports": [
-        "@tauri-apps/api/core",
-        "../ai/store.svelte.ts"
-      ],
+      "exports": ["isMobile", "TabType", "TerminalTabType", "isTerminalTabType", "Tab", "SettingsPage", "Group", "Profile", "Credential", "Forward", "SerialProfile", "TelnetProfile", "Snippet", "HighlightRule", "RemoteEntry", "SidebarPosition", "tabs", "activeTabId", "activeTab", "settingsActive", "settingsPage", "setActiveTab", "addTab", "closeTab", "moveTab", "openSettings", "navigate", "loadProfiles", "loadForwards", "registerTerminalControls", "unregisterTerminalControls", "terminalPaste", "sendTextToActiveTerminal", "readTerminalViewport", "SessionInfo", "registerSession", "unregisterSession", "waitForSession", "connectedSessions", "sessionIdForTab", "broadcastToSessions"],
+      "imports": ["@tauri-apps/api/core", "../ai/store.svelte.ts"],
       "type": "module"
     },
     "src/lib/ai/store.svelte.ts": {
-      "exports": [
-        "position",
-        "setPosition",
-        "isOpen",
-        "openPanel",
-        "closePanel",
-        "togglePanel",
-        "activeSession",
-        "startSession",
-        "loadSettings",
-        "settings",
-        "chatItems"
-      ],
-      "imports": [
-        "@tauri-apps/api/core",
-        "@tauri-apps/api/event",
-        "../save-file.ts",
-        "../i18n/index.svelte.ts"
-      ],
+      "exports": ["AiPosition", "position", "setPosition", "isOpen", "openPanel", "closePanel", "togglePanel", "prefillInput", "pendingPrefill", "clearPrefill", "activeTabId", "activeSession", "sessionForTab", "listAllSessions", "chatItems", "pendingCommand", "isKeyboardLocked", "tokenUsage", "broadcastState", "broadcastEnabled", "broadcastTargets", "toggleBroadcast", "setBroadcastBarCollapsed", "toggleBroadcastTarget", "setBroadcastTargets", "pruneBroadcastTargets", "clearBroadcastState", "StartSessionArgs", "startSession", "resumeSession", "stopSession", "sendMessage", "clearContext", "rebindTarget", "cancelStream", "isStreaming", "executeCommand", "terminateCommand", "submitCommand", "rejectCommand", "getAudit", "settings", "loadSettings", "saveSettings", "listModels", "listSkills", "getSkill", "saveSkill", "deleteSkill"],
+      "imports": ["@tauri-apps/api/core", "@tauri-apps/api/event", "./types.ts", "../save-file.ts", "../i18n/index.svelte.ts"],
       "type": "module"
+    },
+    "src/lib/ai/types.ts": {
+      "exports": ["SkillRecord", "RedactRuleRecord", "CategoryGroup", "LlmProvider", "AiSettings", "CommandKind", "ModelInfo", "AiSessionInfo", "ConversationMeta", "ShellKind", "AiTargetKind", "isRawDeviceKind", "TokenUsage", "ChatItem", "CommandProposed", "CommandResult", "AuditLog", "AuditEntry", "AuditKind", "AiPanelPosition"],
+      "imports": [],
+      "type": "type-def"
     },
     "src/lib/themes/store.svelte.ts": {
-      "exports": [
-        "init",
-        "shapeId",
-        "setShape",
-        "densityId",
-        "setDensity",
-        "currentTermTheme",
-        "termPaletteRef",
-        "setTermPalette",
-        "ShapeId",
-        "DensityId"
-      ],
-      "imports": [
-        "@tauri-apps/api/core"
-      ],
+      "exports": ["init", "shapeId", "setShape", "densityId", "setDensity", "currentTermTheme", "termPaletteRef", "setTermPalette", "ShapeId", "DensityId"],
+      "imports": ["@tauri-apps/api/core"],
       "type": "module"
     },
-    "src/lib/stores/transfers.svelte.ts": {
-      "exports": [
-        "loadMaxConcurrent",
-        "transfers"
-      ],
-      "imports": [
-        "@tauri-apps/api/core"
-      ],
-      "type": "module"
-    },
-    "src/lib/stores/updates.svelte.ts": {
-      "exports": [
-        "startBackgroundChecks"
-      ],
-      "imports": [
-        "@tauri-apps/api/core"
-      ],
-      "type": "module"
-    },
-    "src/lib/stores/toast.svelte.ts": {
-      "exports": [
-        "toast",
-        "push"
-      ],
-      "imports": [],
-      "type": "module"
-    },
-    "src/lib/terminal/command-blocks.ts": {
-      "exports": [
-        "commandBlocks"
-      ],
-      "imports": [],
-      "type": "module"
-    },
-    "src/lib/terminal/highlight.ts": {
-      "exports": [
-        "highlight"
-      ],
-      "imports": [],
-      "type": "module"
-    },
-    "src/lib/i18n/index.svelte.ts": {
-      "exports": [
-        "t",
-        "locale"
-      ],
-      "imports": [],
-      "type": "module"
-    },
+    "src/lib/stores/transfers.svelte.ts": { "exports": ["loadMaxConcurrent", "transfers"], "imports": ["@tauri-apps/api/core"], "type": "module" },
+    "src/lib/stores/updates.svelte.ts": { "exports": ["startBackgroundChecks"], "imports": ["@tauri-apps/api/core"], "type": "module" },
+    "src/lib/stores/toast.svelte.ts": { "exports": ["toast", "push"], "imports": [], "type": "module" },
+    "src/lib/terminal/command-blocks.ts": { "exports": ["commandBlocks"], "imports": [], "type": "module" },
+    "src/lib/terminal/highlight.ts": { "exports": ["highlight"], "imports": [], "type": "module" },
+    "src/lib/i18n/index.svelte.ts": { "exports": ["t", "locale"], "imports": [], "type": "module" },
     "src/lib/components/AppShell.svelte": {
-      "exports": [
-        "default"
-      ],
-      "imports": [
-        "../stores/app.svelte.ts"
-      ],
+      "exports": ["default"],
+      "imports": ["../stores/app.svelte.ts", "../ai/store.svelte.ts"],
       "type": "template"
     },
-    "vite.config.ts": {
-      "exports": [
-        "default"
-      ],
-      "imports": [
-        "vite",
-        "@sveltejs/vite-plugin-svelte"
-      ],
-      "type": "config"
+    "src/lib/components/TerminalPane.svelte": {
+      "exports": ["default"],
+      "imports": ["@xterm/xterm", "../stores/app.svelte.ts", "../ai/store.svelte.ts"],
+      "type": "template"
     },
-    "vitest.config.ts": {
-      "exports": [
-        "default"
-      ],
-      "imports": [
-        "vitest/config",
-        "@sveltejs/vite-plugin-svelte"
-      ],
-      "type": "config"
+    "src/lib/components/BroadcastTargetSelector.svelte": {
+      "exports": ["default"],
+      "imports": ["../stores/app.svelte.ts", "../i18n/index.svelte.ts"],
+      "type": "template"
     },
-    "tsconfig.json": {
-      "exports": [],
-      "imports": [],
-      "type": "config"
+    "src/lib/components/EditPane.svelte": {
+      "exports": ["default"],
+      "imports": ["../stores/app.svelte.ts", "./BroadcastTargetSelector.svelte"],
+      "type": "template"
     },
-    "package.json": {
-      "exports": [],
-      "imports": [],
-      "type": "config"
-    }
+    "src/lib/ai/CommandConfirmDialog.svelte": {
+      "exports": ["default"],
+      "imports": ["./store.svelte.ts", "./types.ts", "../stores/app.svelte.ts", "../i18n/index.svelte.ts"],
+      "type": "template"
+    },
+    "src/lib/ai/ChatPanel.svelte": {
+      "exports": ["default"],
+      "imports": ["./store.svelte.ts", "./CommandConfirmDialog.svelte", "./BroadcastTargetSelector.svelte", "../stores/app.svelte.ts"],
+      "type": "template"
+    },
+    "src/lib/ai/AuditPanel.svelte": { "exports": ["default"], "imports": ["./store.svelte.ts"], "type": "template" },
+    "vite.config.ts": { "exports": ["default"], "imports": ["vite", "@sveltejs/vite-plugin-svelte"], "type": "config" },
+    "vitest.config.ts": { "exports": ["default"], "imports": ["vitest/config", "@sveltejs/vite-plugin-svelte"], "type": "config" },
+    "tsconfig.json": { "exports": [], "imports": [], "type": "config" },
+    "package.json": { "exports": [], "imports": [], "type": "config" }
   }
 }
