@@ -12,7 +12,7 @@ AI Broadcast Mode extends RSSH's AI panel so that approved commands fan out to m
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Broadcast UI & State** - Toggle button, target selector, and per-tab state persistence in the AI panel (completed 2026-07-08)
-- [ ] **Phase 2: Broadcast Dispatch & Safety** - Post-approval command fan-out to selected targets with parallel execution and output isolation
+- [x] **Phase 2: Broadcast Dispatch & Safety** - Post-approval command fan-out to selected targets with parallel execution and output isolation (completed 2026-07-09)
 
 ## Phase Details
 
@@ -54,9 +54,10 @@ Plans:
   3. AI responses reference only the primary tab's output; broadcast targets execute silently without feeding back to the AI
   4. Approval flow (manual confirm, danger mode, auto-run) works identically whether broadcast is on or off — no extra approval dialogs introduced
 
-**Plans**: 1 plan
+**Plans**: 1/1 plans complete
 Plans:
-- [ ] 02-01-PLAN.md — 广播命令分发接线（D-01 approve 广播 + D-02 raw 安全门 + D-03 对称终止 + D-04 sendText 错误卫生），交付 BCAST-05/06/07/08 全部 4 条 Success Criteria
+
+- [x] 02-01-PLAN.md — 广播命令分发接线（D-01 approve 广播 + D-02 raw 安全门 + D-03 对称终止 + D-04 sendText 错误卫生），交付 BCAST-05/06/07/08 全部 4 条 Success Criteria
 
 ## Progress
 
@@ -66,4 +67,4 @@ Phases execute in numeric order: 1 -> 2
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Broadcast UI & State | 2/2 | Complete   | 2026-07-08 |
-| 2. Broadcast Dispatch & Safety | 0/1 | Not started | - |
+| 2. Broadcast Dispatch & Safety | 1/1 | Complete   | 2026-07-09 |

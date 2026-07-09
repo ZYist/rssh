@@ -11,13 +11,13 @@
 
 ### Broadcast Dispatch
 
-- [ ] **BCAST-05**: 用户 Approve 命令后，主标签执行 executeCommand（带 sentinel），广播目标通过 broadcastToSessions 接收 cmd.cmd + "\n"
-- [ ] **BCAST-06**: 广播分发与主标签执行并行，不阻塞主标签的输出收集
-- [ ] **BCAST-07**: AI 只读取主标签（当前活跃标签）的执行输出，广播目标静默执行
+- [x] **BCAST-05**: 用户 Approve 命令后，主标签执行 executeCommand（带 sentinel），广播目标通过 broadcastToSessions 接收 cmd.cmd + "\n"
+- [x] **BCAST-06**: 广播分发与主标签执行并行，不阻塞主标签的输出收集
+- [x] **BCAST-07**: AI 只读取主标签（当前活跃标签）的执行输出，广播目标静默执行
 
 ### Approval Flow
 
-- [ ] **BCAST-08**: 审批流程跟随现有 danger_mode / auto_run_command 设置，广播模式不引入额外审批逻辑
+- [x] **BCAST-08**: 审批流程跟随现有 danger_mode / auto_run_command 设置，广播模式不引入额外审批逻辑
 
 ## v2 Requirements (Deferred)
 
@@ -42,10 +42,10 @@
 | BCAST-02 | Phase 1 | Complete |
 | BCAST-03 | Phase 1 | Complete |
 | BCAST-04 | Phase 1 | Complete (Plan 01-01) |
-| BCAST-05 | Phase 2 | Pending |
-| BCAST-06 | Phase 2 | Pending |
-| BCAST-07 | Phase 2 | Pending |
-| BCAST-08 | Phase 2 | Pending |
+| BCAST-05 | Phase 2 | Complete |
+| BCAST-06 | Phase 2 | Complete |
+| BCAST-07 | Phase 2 | Complete |
+| BCAST-08 | Phase 2 | Complete |
 
 ---
 *Last updated: 2026-07-08 after Plan 01-01 execution (BCAST-04 complete)*
