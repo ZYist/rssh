@@ -1,9 +1,9 @@
 ---
-status: testing
+status: complete
 phase: 02-broadcast-dispatch-safety
 source: [02-VERIFICATION.md]
 started: 2026-07-09T10:20:00Z
-updated: 2026-07-09T11:40:00Z
+updated: 2026-07-09T14:20:00Z
 ---
 
 # Phase 2: Broadcast Dispatch & Safety — UAT
@@ -12,8 +12,7 @@ updated: 2026-07-09T11:40:00Z
 
 ## Current Test
 
-[paused — 修复测试 2 的 Enter-byte blocker 后复跑场景 B，再继续测试 3、5]
-test 4（dialog 门禁）已自测通过；测试 3、5 依赖目标标签真正执行命令，需先修 bug。
+[testing complete]
 
 ## Tests
 
@@ -23,13 +22,12 @@ result: pass
 
 ### 2. 场景 B（BCAST-05/06）
 expected: 广播开启 + 勾选 2 个 SSH 目标，Approve 一条命令 → 主 + 2 目标三个标签几乎同时出现该命令的执行；主标签输出收集不被广播阻塞。源码顺序已证明：broadcastToSessions 在 `await executeCommand` 之前。
-result: issue
-reported: "只有主页面能够跑通指令，其它标签内都是只有指令，但是好像缺少回车符号，需要手动按回车才能跑起来，而且指令不太一样，主页面：$LASTEXITCODE=$null; Get-Date -Format \"yyyy-MM-dd HH:mm:ss\"; $ok=$?; Write-Output \"__rssh_done_3081ee51b1c94da8b5755dcb790a4cb4:0\"，其它标签：> Get-Date -Format \"yyyy-MM-dd HH:mm:ss\""
-severity: blocker
+result: pass
+note: 初测 issue（目标标签缺回车不执行，PowerShell/ConPTY）→ quick 260709-jat (commit 1e137e0) 修复 sendText SSH/local 的 \n→\r 归一化后复测通过：主 + 2 目标标签几乎同时自动执行，无需手动按回车。
 
 ### 3. 场景 C（BCAST-07）
 expected: 广播执行完成后，AI 的后续回复只引用主标签 sentinel 采集的输出，不含目标标签输出。结构性隔离：executeCommand 只 listen 主 session 的 data 事件，广播目标走 sendText 从不被监听。
-result: [pending]
+result: pass
 
 ### 4. 场景 D（BCAST-08 + D-02）
 expected: 广播开启 + 勾选一个 serial 标签 + danger_mode 开启 + auto_run_command 开启 → 命令不自动批准，弹出人工 Approve/Reject dialog。onMount 因 `hasRawBroadcastTarget()` 返回 true 不触发自动 approve。
@@ -37,24 +35,26 @@ result: pass
 
 ### 5. 场景 E（D-03）
 expected: 广播执行中点"终止" → 主标签 + 所有目标标签同时收到 Ctrl+C（`\x03`）中断；目标机器不在主标签中断后继续跑已广播的命令。源码：terminate() 在 `await terminateCommand` 之前 broadcastToSessions ETX。
-result: [pending]
+result: pass
 
 ## Summary
 
 total: 5
-passed: 2
-issues: 1
-pending: 2
+passed: 5
+issues: 0
+pending: 0
 skipped: 0
 blocked: 0
 
 ## Gaps
 
 - truth: "广播开启 + 勾选 SSH 目标 + Approve 命令 → 主标签与所有目标标签几乎同时执行该命令"
-  status: failed
+  status: resolved
   reason: "User reported: 只有主页面能够跑通指令，其它标签内都是只有指令，但是好像缺少回车符号，需要手动按回车才能跑起来（PowerShell/ConPTY 目标）。注意：'指令不太一样'（主标签带 __rssh_done_ sentinel 包裹、目标标签是裸命令）是 BCAST-07 的正确设计，非 bug。"
   severity: blocker
   test: 2
+  resolved_by: "quick 260709-jat (commit 1e137e0) — normalizePtyOutgoing 在 sendText SSH/local 分支把 \\n→\\r"
+  resolved_verify: "复测通过：目标标签自动执行，无需手动回车"
   root_cause: "广播 Enter 字节类型错误。主标签路径 executeCommand (src/lib/ai/store.svelte.ts:693) 用 `\\r` 并附注释「ConPTY/PowerShell only accepts \\r; Unix cooked PTY translates \\r → \\n via ICRNL」；广播路径 CommandConfirmDialog.svelte:177 用 `cmd.cmd + \"\\n\"`（LF），经 TerminalPane.svelte:626 sendText 的 SSH/local 分支原样写入（无 \\n→\\r 转换）。PowerShell/ConPTY 不把 LF 当作回车 → 目标标签命令停在提示符不执行。兄弟函数 pasteText (TerminalPane.svelte:644) 已有正确的 `text.replace(/\\r?\\n/g, \"\\r\")` 转换，sendText 遗漏了同一处理。"
   artifacts:
     - path: "src/lib/ai/CommandConfirmDialog.svelte"
@@ -70,4 +70,4 @@ blocked: 0
 ## Notes
 
 - 测试 2 中"指令内容不同"（主标签 sentinel 包裹 / 目标标签裸命令）经核实是 **BCAST-07 的正确隔离设计**，不计为缺陷。仅"目标标签缺少回车"是真 bug。
-- 测试 3/5 的运行时验证部分依赖目标标签真正执行命令；建议先修复测试 2 的 Enter bug 再复跑 3/5，否则目标标签无输出可观察、隔离/终止语义无法充分验证。测试 4（BCAST-08 + D-02 的 dialog 门禁）与该 bug 相互独立，可独立验证。
+- 测试 2 的 Enter-byte blocker 已由 quick 260709-jat (commit 1e137e0) 修复并复测通过；测试 3/5 现可在目标标签真正执行的前提下充分验证（隔离 / 终止语义）。测试 4（dialog 门禁）与该 bug 本就独立，已通过。
